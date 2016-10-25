@@ -1,12 +1,4 @@
-// ==UserScript==
-// @name         Risibot
-// @namespace    http://tampermonkey.net/
-// @version      0.1
-// @description  try to take over the world!
-// @author       Risitop
-// @match        http://play.pokemonshowdown.com/*
-// @grant        none
-// ==/UserScript==
+
 
 function getRoom() { // Returns current battle object
     url = window.location.href;
