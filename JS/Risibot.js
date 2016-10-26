@@ -69,9 +69,15 @@ Risibot.prototype.choseMove = function() {
                 case 'heal':
                     movesInterests[k - 1] = this.AI.evalHeal(move);
                     break;
+<<<<<<< HEAD
 								case 'spin':
 										movesInterests[k - 1] = this.AI.evalHeal(move);
 										break;
+=======
+		case 'spin':
+		    movesInterests[k - 1] = this.AI.evalHeal(move);
+		    break;
+>>>>>>> b5e8a58d0cac7b151d7b729561c4e602fcf55df1
             }
 		}
 	}
@@ -301,7 +307,7 @@ PokeyI.prototype.evalStatus = function(move) {
 			return 0;
 	}
 	
-	switch (move.status) {
+	switch (move.status) { // DIVISIONS ENTIERES
 		case "par":
 			coef *= (this.getStat(this.bot.ennemy[0], "spe") / 100);
 		case "brn":
@@ -350,10 +356,14 @@ PokeyI.prototype.evalSpin = function(move) {
             return 0;
     return 150;
 };
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> b5e8a58d0cac7b151d7b729561c4e602fcf55df1
 PokeyI.prototype.evalHeal = function(move) {
 	
-	hp = this.bot.pokemon[0].hp;
+    hp = this.bot.pokemon[0].hp;
     if (hp < 25)
         return 1500;
     if (hp < 50)
@@ -428,4 +438,8 @@ risibotWatcher = function() {
 	setTimeout( risibotWatcher, 500 );
 };
 
+<<<<<<< HEAD
 risibotWatcher();	
+=======
+risibotWatcher();
+>>>>>>> b5e8a58d0cac7b151d7b729561c4e602fcf55df1
