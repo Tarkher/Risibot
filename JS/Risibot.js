@@ -31,10 +31,10 @@ function Risibot() {
     
 	this.room = getRoom();
     
-    this.movesParsed = false;
+  this.movesParsed = false;
 	this.moves = undefined;
-    this.buttonsMove = undefined;
-    this.lastMove = 3;
+  this.buttonsMove = undefined;
+  this.lastMove = 0;
 	
 	this.ennemyParsed = false;
 	this.ennemy = undefined;
@@ -43,20 +43,6 @@ function Risibot() {
 	this.pokemon = undefined;
 	
 	this.havePlayed = false;
-	
-	this.stealthSet = false;
-	this.spikesLayers = 0;
-	this.stickySet = false;
-	
-	this.context = {
-		'stealth_a': false,
-		'spikes_a': 0,
-		'sticky_a': false,
-		
-		'stealth_e': false,
-		'spikes_e': 0,
-		'sticky_e': false
-	};
 	
 	this.AI = new PokeyI(this);
 };
@@ -67,10 +53,12 @@ Risibot.prototype.choseMove = function() {
         for (var j=0; j < this.moves[moveType].length; j++) {
             move = this.moves[moveType][j][0];
             k = this.moves[moveType][j][1];
-            console.log(j + " " + k + " " + this.moves[moveType].length);
             switch (moveType) {
                 case 'physical':
                     movesInterests[k - 1] = this.AI.evalP(move);
+                    break;
+                case 'physicalS':
+                    movesInterests[k - 1] = this.AI.evalPS(move);
                     break;
                 case 'special':
                     movesInterests[k - 1] = this.AI.evalS(move);
@@ -78,11 +66,21 @@ Risibot.prototype.choseMove = function() {
                 case 'specialS':
                     movesInterests[k - 1] = this.AI.evalSS(move);
                     break;
+				case 'status':
+                    movesInterests[k - 1] = this.AI.evalStatus(move);
+                    break;
+				case 'traps':
+                    movesInterests[k - 1] = this.AI.evalTraps(move);
+                    break;
+                case 'heal':
+                    movesInterests[k - 1] = this.AI.evalHeal(move);
+                    break;
             }
 		}
 	}
     console.log(movesInterests);
-	return getMaxIndex(movesInterests);
+	choice = getMaxIndex(movesInterests);
+	return choice;
 };
 
 // Gets a formatted moves object
@@ -246,7 +244,7 @@ Risibot.prototype.routine = function() {
 
 PokeyI = function(bot) {
 	
-	this.bot = bot;
+	this.bot = bot;	
 };
 
 PokeyI.prototype.evalP = function(move) {
@@ -269,8 +267,55 @@ PokeyI.prototype.evalP = function(move) {
 		if (this.bot.pokemon[0] && this.bot.pokemon[0].types[i] == move.baseType)
 			coef *= 1.5;
 	}
+    
+    if (move.id == "lowkick") {
+		wgt = this.bot.ennemy[0].weightkg;
+		if (wgt < 10)
+			move.basePower = 20;
+		else if (wgt < 25)
+			move.basePower = 40;
+		else if (wgt < 50)
+			move.basePower = 60;
+		else if (wgt < 100)
+			move.basePower = 80;
+		else if (wgt < 200)
+			move.basePower = 100;
+		else
+			move.basePower = 120;
+	}
+    
+    if (move.accuracy == true)
+        move.accuracy = 100;
 	
-	return coef * move.basePower * (move.accuracy / 100);
+	return coef * move.basePower * (move.accuracy / 100) * this.getMultiplicator(this.bot.pokemon[0], 'atk');
+	
+};
+
+PokeyI.prototype.evalPS = function(move) {
+	coef = 1.0;
+	for (i = 0; i < this.bot.ennemy[0].types.length; i++) {
+		t = this.bot.ennemy[0].types[i];
+		switch (exports.BattleTypeChart[t]['damageTaken'][move.baseType]) {
+			case 1:
+				coef *= 2;
+				break;
+			case 2:
+				coef /= 2;
+				break;
+			case 3:
+				coef = 0;
+				break;
+		}
+	}
+	for (i = 0; i < this.bot.pokemon[0].types.length; i++) {
+		if (this.bot.pokemon[0] && this.bot.pokemon[0].types[i] == move.baseType)
+			coef *= 1.5;
+	}
+    
+    if (move.accuracy == true)
+        move.accuracy = 100;
+	
+	return coef * move.basePower * (move.accuracy / 100) * this.getMultiplicator(this.bot.pokemon[0], 'atk');
 	
 };
 
@@ -294,8 +339,11 @@ PokeyI.prototype.evalS = function(move) {
 		if (this.bot.pokemon[0] && this.bot.pokemon[0].types[i] == move.baseType)
 			coef *= 1.5;
 	}
+    
+    if (move.accuracy == true)
+        move.accuracy = 100;
 	
-	return coef * move.basePower * (move.accuracy / 100);
+	return coef * move.basePower * (move.accuracy / 100) * this.getMultiplicator(this.bot.pokemon[0], 'spa');
 	
 };
 
@@ -319,19 +367,135 @@ PokeyI.prototype.evalSS = function(move) {
 		if (this.bot.pokemon[0] && this.bot.pokemon[0].types[i] == move.baseType)
 			coef *= 1.5;
 	}
+    
+    if (move.accuracy == true)
+        move.accuracy = 100;
 	
-	return coef * move.basePower * (move.accuracy / 100);
+	return coef * move.basePower * (move.accuracy / 100) * this.getMultiplicator(this.bot.pokemon[0], 'spa');
 	
 };
 
+PokeyI.prototype.evalStatus = function(move) {
+	coef = 1.0;
+	if (this.bot.ennemy[0].status != "" || 
+		(move.status == "par" && this.hasType(this.bot.ennemy[0], "Electric")) ||
+		(move.status == "brn" && this.hasType(this.bot.ennemy[0], "Fire")) ||
+		(move.baseType == "Grass" && this.hasType(this.bot.ennemy[0], "Grass")) ||
+		(move.status == "tox" && this.hasType(this.bot.ennemy[0], "Poison"))) {
+			return 0;
+	}
+	
+	switch (move.status) {
+		case "par":
+			coef *= (this.getStat(this.bot.ennemy[0], "spe") / 100);
+		case "brn":
+			coef *= (this.getStat(this.bot.ennemy[0], "atk") / 100);
+		case "slp":
+			coef *= (this.getDanger(this.bot.ennemy[0]) / 60);
+		case "tox":
+			coef *= (this.getBulk(this.bot.ennemy[0]) / 100);
+	}
+	
+	if (coef < 0.5)
+		return 30;
+	if (coef < 1)
+		return 60;
+	if (coef < 1.2)
+		return 150;
+	return 400;
+	
+};
+
+PokeyI.prototype.evalTraps = function(move) {
+	
+	if (this.getDanger(this.bot.ennemy[0]) > 100)
+		return 0;
+	
+	switch (move.id) {
+		case "stealthrock":
+			if (!this.bot.room.battle.yourSide.sideConditions.stealthrocks)
+				return 150;
+			break;
+		case "spikes":
+			if (!this.bot.room.battle.yourSide.sideConditions.spikes)
+				return 150;
+			break;
+		case "stickyweb":
+			if (!!this.bot.room.battle.yourSide.sideConditions.stickyweb)
+				return 150;
+			break;
+	}
+	return 0;
+};
+
+PokeyI.prototype.evalHeal = function(move) {
+	
+	hp = this.bot.pokemon[0].hp;
+    if (hp < 25)
+        return 1500;
+    if (hp < 50)
+        return 1000;
+    if (hp < 60)
+        return 500;
+    if (hp < 75)
+        return 100;
+    if (hp < 90)
+        return 30;
+    return 0;
+};
+
+PokeyI.prototype.hasType = function(pokemon, type) {
+	for (var i = 0; i < pokemon.types.length; i++) {
+		if (pokemon.types[i] == type)
+			return true;
+	}
+	return false;
+};
+
+PokeyI.prototype.getStat = function(pokemon, stat) {
+	return pokemon.baseStats[stat];
+};
+
+PokeyI.prototype.getBulk = function(pokemon) {
+	return (this.getStat(pokemon, 'hp')/2 + 
+		Math.max(this.getStat(pokemon, 'def'), this.getStat(pokemon, 'spd')) / 2);
+};
+
+PokeyI.prototype.getDanger = function(pokemon) {
+	return (this.getStat(pokemon, 'spe')/2 + 
+		Math.max(this.getStat(pokemon, 'atk'), this.getStat(pokemon, 'spa')) / 2);
+};
+
+PokeyI.prototype.getMultiplicator = function(pokemon, stat) {
+    console.log(pokemon.boosts[stat]);
+	if (pokemon.boosts[stat] > 0)
+		return 1.0 + 0.5 * pokemon.boosts[stat];
+	else if (pokemon.boosts[stat] < 0)
+        switch (pokemon.boosts[stat]) {
+            case -1:
+                return 0.67;
+            case -2:
+                return 0.5;
+            case -3:
+                return 0.4;
+            case -4:
+                return 0.33;
+            case -5:
+                return 0.29;
+            case -6:
+                return 0.25;
+        }
+    return 1.0;
+};
 ///////////////////////////////////////////////////////////////////////////////
 
 risibotWatcher = function() {
+    console.log("Watcher");
     if (window.location.href != "http://play.pokemonshowdown.com/") {
         room = getRoom();
         if (room)
         {
-            if (room.chatHistory.lines[0] === "La chancla !") {
+            if (room.chatHistory.lines[room.chatHistory.lines.length - 1] === "La chancla !") {
                 risitas = new Risibot();
                 risitas.routine(null);
                 return;
