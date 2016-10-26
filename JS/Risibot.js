@@ -8,7 +8,6 @@ function Risibot() {
   this.parsingMoves = false;
   this.moves = undefined;
   this.buttonsMove = undefined;
-  this.lastMove = 0;
 
   this.ennemyParsed = false;
   this.ennemy = undefined;
