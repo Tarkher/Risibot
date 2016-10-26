@@ -9,6 +9,7 @@
 // @require      https://raw.githubusercontent.com/Risitop/Risibot/master/JS/FullPokemon.js
 // @require      https://raw.githubusercontent.com/Risitop/Risibot/master/JS/Tools.js
 // @require      https://raw.githubusercontent.com/Risitop/Risibot/master/JS/PokeyI.js
+// @require      https://raw.githubusercontent.com/Risitop/Risibot/master/JS/Risibot.js
 // @grant        none
 // ==/UserScript==
 ///////////////////////////////////////////////////////////////////////////////
