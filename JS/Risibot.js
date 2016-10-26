@@ -389,8 +389,8 @@ PokeyI.prototype.getBulk = function(pokemon) {
 };
 
 PokeyI.prototype.getDanger = function(pokemon) {
-	return (this.getStat(pokemon, 'spe')/2 / (pokemon.status == 'par' ? 2 : 1) + 
-		Math.max(this.getStat(pokemon, 'atk') / (pokemon.status == 'par' ? 2 : 1), this.getStat(pokemon, 'spa') / (pokemon.status == 'par' ? 2 : 1)) / 2);
+	return (this.getStat(pokemon, 'spe')/2 / (pokemon.status == 'par' ? 4 : 1) + 
+		Math.max(this.getStat(pokemon, 'atk') / (pokemon.status == 'brn' ? 2 : 1), this.getStat(pokemon, 'spa')) / 2);
 };
 
 PokeyI.prototype.getMultiplicator = function(pokemon, stat) {
