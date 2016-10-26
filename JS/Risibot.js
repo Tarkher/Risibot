@@ -385,7 +385,7 @@ PokeyI.prototype.evalStatus = function(move) {
 			return 0;
 	}
 	
-	switch (move.status) {
+	switch (move.status) { // DIVISIONS ENTIERES
 		case "par":
 			coef *= (this.getStat(this.bot.ennemy[0], "spe") / 100);
 		case "brn":
@@ -413,7 +413,7 @@ PokeyI.prototype.evalTraps = function(move) {
 	
 	switch (move.id) {
 		case "stealthrock":
-			if (!this.bot.room.battle.yourSide.sideConditions.stealthrocks)
+			if (!this.bot.room.battle.yourSide.sideConditions.stealthrock)
 				return 150;
 			break;
 		case "spikes":
@@ -430,7 +430,7 @@ PokeyI.prototype.evalTraps = function(move) {
 
 PokeyI.prototype.evalHeal = function(move) {
 	
-	hp = this.bot.pokemon[0].hp;
+    hp = this.bot.pokemon[0].hp;
     if (hp < 25)
         return 1500;
     if (hp < 50)
