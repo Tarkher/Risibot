@@ -69,15 +69,9 @@ Risibot.prototype.choseMove = function() {
                 case 'heal':
                     movesInterests[k - 1] = this.AI.evalHeal(move);
                     break;
-<<<<<<< HEAD
 								case 'spin':
-										movesInterests[k - 1] = this.AI.evalHeal(move);
-										break;
-=======
-		case 'spin':
-		    movesInterests[k - 1] = this.AI.evalHeal(move);
-		    break;
->>>>>>> b5e8a58d0cac7b151d7b729561c4e602fcf55df1
+                    movesInterests[k - 1] = this.AI.evalsSpin(move);
+                    break;
             }
 		}
 	}
@@ -183,7 +177,11 @@ Risibot.prototype.parseMoves = function() {
 };
 
 Risibot.prototype.getPokemon = function() {
-	this.pokemon = this.room.battle.mySide.active;
+	this.pokemon = undefined;
+	for (i = 0; i<this.room.battle.myPokemon) {
+		if (this.room.battle.pokemon[i] == 'active')
+			this.pokemon = this.room.battle.pokemon[i];
+	}
 	if (this.pokemon)
 		this.pokemonParsed = true;
 };
@@ -307,7 +305,7 @@ PokeyI.prototype.evalStatus = function(move) {
 			return 0;
 	}
 	
-	switch (move.status) { // DIVISIONS ENTIERES
+	switch (move.status) {
 		case "par":
 			coef *= (this.getStat(this.bot.ennemy[0], "spe") / 100);
 		case "brn":
@@ -326,6 +324,13 @@ PokeyI.prototype.evalStatus = function(move) {
 		return 150;
 	return 400;
 	
+};
+
+PokeyI.prototype.evalSpin = function(move) {
+	
+  if(jQuery.isEmptyObject(this.bot.room.battle.mySide.sideConditions))
+    return 0;
+  return 150;
 };
 
 PokeyI.prototype.evalTraps = function(move) {
@@ -350,20 +355,9 @@ PokeyI.prototype.evalTraps = function(move) {
 	return 0;
 };
 
-PokeyI.prototype.evalSpin = function(move) {
-    
-    if(jQuery.isEmptyObject(this.bot.room.battle.mySide.sideConditions))
-            return 0;
-    return 150;
-};
-<<<<<<< HEAD
-
-=======
-    
->>>>>>> b5e8a58d0cac7b151d7b729561c4e602fcf55df1
 PokeyI.prototype.evalHeal = function(move) {
 	
-    hp = this.bot.pokemon[0].hp;
+	hp = this.bot.pokemon[0].hp;
     if (hp < 25)
         return 1500;
     if (hp < 50)
@@ -395,8 +389,8 @@ PokeyI.prototype.getBulk = function(pokemon) {
 };
 
 PokeyI.prototype.getDanger = function(pokemon) {
-	return (this.getStat(pokemon, 'spe')/2 + 
-		Math.max(this.getStat(pokemon, 'atk'), this.getStat(pokemon, 'spa')) / 2);
+	return (this.getStat(pokemon, 'spe')/2 / (pokemon.status == 'par' ? 2 : 1) + 
+		Math.max(this.getStat(pokemon, 'atk') / (pokemon.status == 'par' ? 2 : 1), this.getStat(pokemon, 'spa') / (pokemon.status == 'par' ? 2 : 1)) / 2);
 };
 
 PokeyI.prototype.getMultiplicator = function(pokemon, stat) {
@@ -438,8 +432,4 @@ risibotWatcher = function() {
 	setTimeout( risibotWatcher, 500 );
 };
 
-<<<<<<< HEAD
-risibotWatcher();	
-=======
 risibotWatcher();
->>>>>>> b5e8a58d0cac7b151d7b729561c4e602fcf55df1
