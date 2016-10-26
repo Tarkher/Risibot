@@ -2,6 +2,7 @@ function Risibot() {
 
   this.room = getRoom();
   this.currentTurn = 0;
+  this.caca = true;
 
   this.movesParsed = false;
   this.parsingMoves = false;
