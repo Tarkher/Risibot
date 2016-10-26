@@ -75,6 +75,9 @@ Risibot.prototype.choseMove = function() {
                 case 'heal':
                     movesInterests[k - 1] = this.AI.evalHeal(move);
                     break;
+		case 'spin':
+		    movesInterests[k - 1] = this.AI.evalHeal(move);
+		    break;
             }
 		}
 	}
@@ -421,13 +424,20 @@ PokeyI.prototype.evalTraps = function(move) {
 				return 150;
 			break;
 		case "stickyweb":
-			if (!!this.bot.room.battle.yourSide.sideConditions.stickyweb)
+			if (!this.bot.room.battle.yourSide.sideConditions.stickyweb)
 				return 150;
 			break;
 	}
 	return 0;
 };
 
+PokeyI.prototype.evalSpin = function(move) {
+    
+    if(jQuery.isEmptyObject(this.bot.room.battle.mySide.sideConditions))
+            return 0;
+    return 150;
+};
+    
 PokeyI.prototype.evalHeal = function(move) {
 	
     hp = this.bot.pokemon[0].hp;
