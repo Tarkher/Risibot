@@ -1,4 +1,4 @@
-// ==UserScript==
+bite// ==UserScript==
 // @name         Risibot
 // @namespace    http://tampermonkey.net/
 // @version      0.1
