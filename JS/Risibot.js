@@ -55,16 +55,10 @@ Risibot.prototype.choseMove = function() {
             k = this.moves[moveType][j][1];
             switch (moveType) {
                 case 'physical':
-                    movesInterests[k - 1] = this.AI.evalP(move);
-                    break;
                 case 'physicalS':
-                    movesInterests[k - 1] = this.AI.evalPS(move);
-                    break;
                 case 'special':
-                    movesInterests[k - 1] = this.AI.evalS(move);
-                    break;
                 case 'specialS':
-                    movesInterests[k - 1] = this.AI.evalSS(move);
+                    movesInterests[k - 1] = this.AI.evalDamagingMove(move);
                     break;
 				case 'status':
                     movesInterests[k - 1] = this.AI.evalStatus(move);
@@ -75,10 +69,13 @@ Risibot.prototype.choseMove = function() {
                 case 'heal':
                     movesInterests[k - 1] = this.AI.evalHeal(move);
                     break;
+								case 'spin':
+										movesInterests[k - 1] = this.AI.evalHeal(move);
+										break;
             }
 		}
 	}
-    console.log(movesInterests);
+  console.log(movesInterests);
 	choice = getMaxIndex(movesInterests);
 	return choice;
 };
@@ -247,7 +244,8 @@ PokeyI = function(bot) {
 	this.bot = bot;	
 };
 
-PokeyI.prototype.evalP = function(move) {
+PokeyI.prototype.evalDamagingMove = function(move) {
+	
 	coef = 1.0;
 	for (i = 0; i < this.bot.ennemy[0].types.length; i++) {
 		t = this.bot.ennemy[0].types[i];
@@ -268,7 +266,7 @@ PokeyI.prototype.evalP = function(move) {
 			coef *= 1.5;
 	}
     
-    if (move.id == "lowkick") {
+  if (move.id == "lowkick") {
 		wgt = this.bot.ennemy[0].weightkg;
 		if (wgt < 10)
 			move.basePower = 20;
@@ -284,94 +282,12 @@ PokeyI.prototype.evalP = function(move) {
 			move.basePower = 120;
 	}
     
-    if (move.accuracy == true)
-        move.accuracy = 100;
+  if (move.accuracy == true)
+      move.accuracy = 100;
+		
+	volatileEffects = this.getMultiplicator(this.bot.pokemon[0], (move.category == "physical") ? 'atk' : 'spa');
 	
-	return coef * move.basePower * (move.accuracy / 100) * this.getMultiplicator(this.bot.pokemon[0], 'atk');
-	
-};
-
-PokeyI.prototype.evalPS = function(move) {
-	coef = 1.0;
-	for (i = 0; i < this.bot.ennemy[0].types.length; i++) {
-		t = this.bot.ennemy[0].types[i];
-		switch (exports.BattleTypeChart[t]['damageTaken'][move.baseType]) {
-			case 1:
-				coef *= 2;
-				break;
-			case 2:
-				coef /= 2;
-				break;
-			case 3:
-				coef = 0;
-				break;
-		}
-	}
-	for (i = 0; i < this.bot.pokemon[0].types.length; i++) {
-		if (this.bot.pokemon[0] && this.bot.pokemon[0].types[i] == move.baseType)
-			coef *= 1.5;
-	}
-    
-    if (move.accuracy == true)
-        move.accuracy = 100;
-	
-	return coef * move.basePower * (move.accuracy / 100) * this.getMultiplicator(this.bot.pokemon[0], 'atk');
-	
-};
-
-PokeyI.prototype.evalS = function(move) {
-	coef = 1.0;
-	for (i = 0; i < this.bot.ennemy[0].types.length; i++) {
-		t = this.bot.ennemy[0].types[i];
-		switch (exports.BattleTypeChart[t]['damageTaken'][move.baseType]) {
-			case 1:
-				coef *= 2;
-				break;
-			case 2:
-				coef /= 2;
-				break;
-			case 3:
-				coef = 0;
-				break;
-		}
-	}
-	for (i = 0; i < this.bot.pokemon[0].types.length; i++) {
-		if (this.bot.pokemon[0] && this.bot.pokemon[0].types[i] == move.baseType)
-			coef *= 1.5;
-	}
-    
-    if (move.accuracy == true)
-        move.accuracy = 100;
-	
-	return coef * move.basePower * (move.accuracy / 100) * this.getMultiplicator(this.bot.pokemon[0], 'spa');
-	
-};
-
-PokeyI.prototype.evalSS = function(move) {
-	coef = 1.0;
-	for (i = 0; i < this.bot.ennemy[0].types.length; i++) {
-		t = this.bot.ennemy[0].types[i];
-		switch (exports.BattleTypeChart[t]['damageTaken'][move.baseType]) {
-			case 1:
-				coef *= 2;
-				break;
-			case 2:
-				coef /= 2;
-				break;
-			case 3:
-				coef = 0;
-				break;
-		}
-	}
-	for (i = 0; i < this.bot.pokemon[0].types.length; i++) {
-		if (this.bot.pokemon[0] && this.bot.pokemon[0].types[i] == move.baseType)
-			coef *= 1.5;
-	}
-    
-    if (move.accuracy == true)
-        move.accuracy = 100;
-	
-	return coef * move.basePower * (move.accuracy / 100) * this.getMultiplicator(this.bot.pokemon[0], 'spa');
+	return coef * move.basePower * (move.accuracy / 100) * volatileEffects;
 	
 };
 
@@ -413,7 +329,7 @@ PokeyI.prototype.evalTraps = function(move) {
 	
 	switch (move.id) {
 		case "stealthrock":
-			if (!this.bot.room.battle.yourSide.sideConditions.stealthrocks)
+			if (!this.bot.room.battle.yourSide.sideConditions.stealthrock)
 				return 150;
 			break;
 		case "spikes":
@@ -421,11 +337,18 @@ PokeyI.prototype.evalTraps = function(move) {
 				return 150;
 			break;
 		case "stickyweb":
-			if (!!this.bot.room.battle.yourSide.sideConditions.stickyweb)
+			if (!this.bot.room.battle.yourSide.sideConditions.stickyweb)
 				return 150;
 			break;
 	}
 	return 0;
+};
+
+PokeyI.prototype.evalSpin = function(move) {
+    
+    if(jQuery.isEmptyObject(this.bot.room.battle.mySide.sideConditions))
+            return 0;
+    return 150;
 };
 
 PokeyI.prototype.evalHeal = function(move) {
@@ -505,4 +428,4 @@ risibotWatcher = function() {
 	setTimeout( risibotWatcher, 500 );
 };
 
-risibotWatcher();
+risibotWatcher();	
