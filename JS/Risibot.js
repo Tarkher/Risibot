@@ -171,7 +171,7 @@ Risibot.prototype.getPokemon = function() {
   pokemonGeneral = this.room.battle.mySide.active[0];
   if (pokemonPerso && pokemonGeneral) {
     this.pokemonParsed = true;
-    this.pokemon = new fullPokemon(pokemonPerso, pokemonGeneral);
+    this.pokemon = new FullPokemon(pokemonPerso, pokemonGeneral);
     console.log("Risibot: getPokemon: Pokemon parsed.");
   }
 };
