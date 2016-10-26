@@ -46,6 +46,7 @@ function fullPokemon(pokemonPerso, pokemonGeneral) {
 	this.boosts = pokemonGeneral.boosts;
 	this.fainted = pokemonGeneral.fainted;
 	this.weightkg = pokemonGeneral.weightkg;
+    this.baseStats = pokemonGeneral.baseStats;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -53,9 +54,11 @@ function fullPokemon(pokemonPerso, pokemonGeneral) {
 function Risibot() {
     
 	this.room = getRoom();
+    this.currentTurn = 0;
     
   this.movesParsed = false;
-	this.moves = undefined;
+  this.parsingMoves = false;
+    this.moves = undefined;
   this.buttonsMove = undefined;
   this.lastMove = 0;
 	
@@ -68,6 +71,8 @@ function Risibot() {
 	this.havePlayed = false;
 	
 	this.AI = new PokeyI(this);
+    
+    console.log("Risibot: Risibot initialized.");
 };
 
 Risibot.prototype.choseMove = function() {
@@ -96,24 +101,17 @@ Risibot.prototype.choseMove = function() {
                     movesInterests[k - 1] = this.AI.evalsSpin(move);
                     break;
             }
+            console.log("Risibot: choseMove: Move " + move.name + ".");
 		}
 	}
-  console.log(movesInterests);
+    console.log("Risibot: choseMove: " + movesInterests);
 	choice = getMaxIndex(movesInterests);
 	return choice;
 };
 
 // Gets a formatted moves object
 Risibot.prototype.parseMoves = function() {
-	movesTab = [];
-	this.buttonsMoves = document.getElementsByName("chooseMove");
-    if (this.buttonsMoves.length == 0)
-        return undefined;
-    
-	for (var i = 0; i < this.buttonsMoves.length; i++) {
-		movesTab.push(Tools.getMove(this.buttonsMoves[i].attributes['data-move'].nodeValue));
-	}
-    
+    this.movesParsed = false;
 	this.moves = {
 		'traps': [], // Entry hazards
 		'status': [], // Thunder wave
@@ -138,9 +136,23 @@ Risibot.prototype.parseMoves = function() {
 		'fakeOut': []
 	};
 	
+	movesTab = [];
+	this.buttonsMoves = document.getElementsByName("chooseMove");
+	if (this.buttonsMoves.length == 0) {
+        console.log("Risibot: parseMoves: " + this.buttonsMoves.length + " moves parsed. Retrying...");
+		that = this;
+        this.parsingMoves = true;
+        setTimeout( function() { that.parseMoves(); }, 1000);
+        return;
+    }
+    
+	for (var i = 0; i < this.buttonsMoves.length; i++) {
+		movesTab.push(Tools.getMove(this.buttonsMoves[i].attributes['data-move'].nodeValue));
+	}
+	
 	for (i = 0; i < movesTab.length; i++) {
 		m = movesTab[i];
-        k = parseInt(this.buttonsMoves[i].value);
+    k = parseInt(this.buttonsMoves[i].value);
 		
 		// Particular moves
 		if (m.id == 'leechseed')
@@ -196,6 +208,7 @@ Risibot.prototype.parseMoves = function() {
 		}
 	}
     
+    console.log("Risibot: parseMoves: " + this.buttonsMoves.length + " moves parsed.");
     this.movesParsed = true;
 };
 
@@ -206,17 +219,20 @@ Risibot.prototype.getPokemon = function() {
 		if (this.room.myPokemon[i].active)
 			pokemonPerso = this.room.myPokemon[i];
 	}
-  pokemonGeneral = this.room.battle.mySide.active[0];
+    pokemonGeneral = this.room.battle.mySide.active[0];
 	if (pokemonPerso && pokemonGeneral) {
 		this.pokemonParsed = true;
 		this.pokemon = new fullPokemon(pokemonPerso, pokemonGeneral);
+        console.log("Risibot: getPokemon: Pokemon parsed.");
 	}
 };
 
 Risibot.prototype.getEnnemyPokemon = function() {
 	this.ennemy = this.room.battle.yourSide.active;
-	if (this.ennemy)
+	if (this.ennemy) {
 		this.ennemyParsed = true;
+        console.log("Risibot: getPokemon: Ennemy pokemon parsed.");
+    }
 };
 
 Risibot.prototype.waitingForMe = function(){
@@ -230,35 +246,40 @@ Risibot.prototype.waitingForMe = function(){
 };
 
 Risibot.prototype.attack = function(id) {
-    try {
-        this.room.chooseMove(id, this.buttonsMoves[id - 1]);
-    } catch (TypeError) {
-        this.room.chooseMove(this.lastMove, this.buttonsMoves[this.lastMove - 1]);
-        return false;
-    }
+    
+    if (!this.buttonsMoves[0])
+        return;
+    
+    console.log("Risibot: attack: Trying to execute move " + id + ".");
+    
+	var k = 0;
+	while (parseInt(this.buttonsMoves[k].value) != id)
+		k++;
+    this.room.chooseMove(id, this.buttonsMoves[k]);
     return true;
 };
 
 Risibot.prototype.routine = function() {
     
-    if (!this.movesParsed) {
+    if (this.currentTurn < this.room.battle.turn) {
+        this.movesParsed = false;
+        this.parsingMoves = false;
+        this.getEnnemyPokemon();
+        this.getPokemon();
+        this.currentTurn = this.room.battle.turn;
+    }
+    
+    if (!this.movesParsed && !this.parsingMoves) {
         this.parseMoves();
     }
-	if (!this.ennemyParsed)
-        this.getEnnemyPokemon();
-    if (!this.pokemonParsed)
-        this.getPokemon();
 
 	if (this.waitingForMe()) {
-        if (this.pokemon) {
+        if (this.pokemon && this.room.battle.mySide.active && !this.pokemon.fainted && this.movesParsed) {
             m = this.choseMove();
             success = this.attack(m + 1);
             if (success) {
                 this.lastMove = m;
             }
-            this.movesParsed = false;
-            this.ennemyParsed = false;
-            this.pokemonParsed = false;
         } else { //Chose another 
             placeholder = 1;
         }
@@ -355,8 +376,10 @@ PokeyI.prototype.evalStatus = function(move) {
 
 PokeyI.prototype.evalSpin = function(move) {
 	
-  if(jQuery.isEmptyObject(this.bot.room.battle.mySide.sideConditions))
+  if(jQuery.isEmptyObject(this.bot.room.battle.mySide.sideConditions)) {
+    console.log("Risibot: evalSpin: There is nothing to spin.");
     return 0;
+  }
   return 150;
 };
 
@@ -379,6 +402,7 @@ PokeyI.prototype.evalTraps = function(move) {
 				return 150;
 			break;
 	}
+    console.log("Risibot: evalTraps: Entry hazards are already set.");
 	return 0;
 };
 
