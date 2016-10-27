@@ -54,7 +54,7 @@ Risibot.prototype.choseMove = function() {
           movesInterests[k - 1] = this.AI.evalDefog(move);
           break;
         case 'roar':
-          movesInterests[k - 1] = this.AI.evelRoar(move);
+          movesInterests[k - 1] = this.AI.evalRoar(move);
           break;
       }
       console.log("Risibot: choseMove: Move " + move.name + ".");
