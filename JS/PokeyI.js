@@ -20,21 +20,7 @@ BattleRoles = {
 
 PokeyI.prototype.evalDamagingMove = function(move) {
 
-  coef = 1.0;
-  for (i = 0; i < this.bot.ennemy[0].types.length; i++) {
-    t = this.bot.ennemy[0].types[i];
-    switch (exports.BattleTypeChart[t].damageTaken[move.baseType]) {
-      case 1:
-        coef *= 2;
-        break;
-      case 2:
-        coef /= 2;
-        break;
-      case 3:
-        coef = 0;
-        break;
-    }
-  }
+  coef = this.getWeaknesses(this.bot.ennemy[0])[move.baseType];
   for (i = 0; i < this.bot.pokemon.types.length; i++) {
     if (this.bot.pokemon && this.bot.pokemon.types[i] == move.baseType)
       coef *= 1.5;
@@ -189,6 +175,85 @@ PokeyI.prototype.getMultiplicator = function(pokemon, stat) {
         return 0.25;
     }
   return 1.0;
+};
+
+PokeyI.prototype.getWeaknesses = function(poke) { //Takes a fullPokemon for argument
+  //Returns a dictionnary of the pokemon weaknesses
+
+  var id = poke.speciesid;
+  var ab = [""];
+  var init = ["Bug", "Dark", "Dragon", "Electric", "Fairy", "Fighting", "Fire", "Flying",
+    "Ghost", "Grass", "Ground", "Ice", "Normal", "Poison", "Psychic", "Rock",
+    "Steel", "Water", "powder", "par", "psn", "tox", "brn", "trapped"
+  ];
+
+  for (var i in exports.BattlePokedex[id].abilities) {
+    ab.push(exports.BattlePokedex[id].abilities[i]);
+  }
+
+  var weaknesses = {};
+
+  for (var i = 0; i < init.length; i++) {
+    weaknesses[init[i]] = 1.0;
+  }
+
+  for (var i = 0; i < poke.types.length; i++) {
+    t = poke.types[i];
+    for (var j in exports.BattleTypeChart[t]['damageTaken']) {
+      switch (exports.BattleTypeChart[t]['damageTaken'][j]) {
+        case 1:
+          weaknesses[j] *= 2.0;
+          break;
+        case 2:
+          weaknesses[j] *= 0.5;
+          break;
+        case 3:
+          weaknesses[j] *= 0.0;
+          break;
+      }
+    }
+  }
+
+  for (var i = 0; i < ab.length; i++) {
+    if (ab[i] == "Dry Skin") {
+      weaknesses["Fire"] *= 1.25;
+      weaknesses["Water"] = 0.0;
+    } else if (ab[i] == "Filter" || ab[i] == "Solid Rock") {
+      for (var j in exports.BattleTypeChart[t]['damageTaken']) {
+        if (weaknesses[j] == 2.0 || weaknesses == 4.0) {
+          weaknesses[j] *= 0.75;
+        }
+      }
+    } else if (ab[i] == "Flash Fire") {
+      weaknesses["Fire"] = 0.0;
+    } else if (ab[i] == "HeatProof") {
+      weaknesses["Fire"] *= 0.5;
+    } else if (ab[i] == "Levitate") {
+      weaknesses["Ground"] = 0.0;
+    } else if (ab[i] == "Thick Fat") {
+      weaknesses["Fire"] *= 0.5;
+      weaknesses["Ice"] *= 0.5;
+    } else if (ab[i] == "Volt Absorb" || ab[i] == "Lightningrod" || ab[i] == "Motor Drive") {
+      weaknesses["Electric"] = 0.0;
+      weaknesses["par"] = 0.0;
+    } else if (ab[i] == "Water Absorb" || ab[i] == "Storm Drain") {
+      weaknesses["Water"] = 0.0;
+    } else if (ab[i] == "Wonder Guard") {
+      for (var j in exports.BattleTypeChart[t]['damageTaken']) {
+        if (weaknesses[j] != 2.0 && weaknesses != 4.0) {
+          weaknesses[j] = 0.0;
+        }
+      }
+    } else if (ab[i] == "Sap Sipper") {
+      weaknesses["Grass"] = 0.0;
+      weaknesses["powder"] = 0.0;
+    } else if (ab[i] == "Poison Heal") {
+      weaknesses["tox"] = 0.0;
+      weaknesses["psn"] = 0.0;
+    }
+  }
+
+  return weaknesses;
 };
 
 PokeyI.prototype.evalSwitch = function(pokemon) {
