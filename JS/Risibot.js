@@ -47,6 +47,9 @@ Risibot.prototype.choseMove = function() {
         case 'spin':
           movesInterests[k - 1] = this.AI.evalsSpin(move);
           break;
+        case 'seeds':
+          movesInterests[k - 1] = this.AI.evalSeeds(move);
+          break;
       }
       console.log("Risibot: choseMove: Move " + move.name + ".");
     }
