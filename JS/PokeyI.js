@@ -69,7 +69,7 @@ PokeyI.prototype.evalStatus = function(move) {
       coef *= (this.getStat(this.bot.ennemy[0], "atk") / 100);
       break;
     case "slp":
-      coef *= (this.getDanger(this.bot.ennemy[0]));
+      coef *= (this.getDanger(this.bot.ennemy[0], this.bot.pokemon));
       break;
     case "tox":
       coef *= (this.getBulk(this.bot.ennemy[0]) / 100);
@@ -96,7 +96,7 @@ PokeyI.prototype.evalSpin = function(move) {
 
 PokeyI.prototype.evalTraps = function(move) {
 
-  if (this.getDanger(this.bot.ennemy[0]) > 100)
+  if (this.getDanger(this.bot.ennemy[0], this.bot.pokemon) > 100)
     return 0;
 
   switch (move.id) {
@@ -137,14 +137,15 @@ PokeyI.prototype.evalSeeds = function(move) {
 
   if (this.bot.ennemy[0].volatiles.leechseed)
     return 0;
-
-  if (this.getDanger(this.bot.pokemon, this.bot.ennemy[0]) < 0.3) // Ennemy could switch
+  
+  var danger = this.getDanger(this.bot.ennemy[0], this.bot.pokemon);
+  if (d < 0.3) // Ennemy could switch
     return 100;
-  if (this.getDanger(this.bot.pokemon, this.bot.ennemy[0]) < 0.8) // Ennemy will probably not switch
+  if (d < 0.8) // Ennemy will probably not switch
     return 300;
-  if (this.getDanger(this.bot.pokemon, this.bot.ennemy[0]) < 1.5) // It's crucial to survive
+  if (d < 1.5) // It's crucial to survive
     return 399;
-
+  return 0 // ABORT MISSION
 };
 
 PokeyI.prototype.hasType = function(pokemon, type) {
