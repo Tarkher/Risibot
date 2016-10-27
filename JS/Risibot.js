@@ -1,3 +1,5 @@
+VER = "0.3";
+
 function Risibot() {
 
   this.room = getRoom();
@@ -18,7 +20,27 @@ function Risibot() {
 
   this.AI = new PokeyI(this);
 
-  console.log("Risibot: Risibot initialized.");
+  this.firstMessages(0);
+};
+
+Risibot.prototype.say = function(msg) {
+	this.room.send("[Risibot]: La chancla channel: " + msg);
+};
+
+Risibot.prototype.firstMessages = function(i) {
+	switch (i) {
+		case 0:
+			this.say("Risibot initialized. V." + VER);
+			break;
+		case 1:
+			this.say("Here is my code : https://github.com/Risitop/Risibot/");
+			break;
+		case 2:
+			this.say("Good luck human.");
+			return;
+	}
+	that = this;
+	setTimeout( function() { that.firstMessages(i + 1); }, 1000 );
 };
 
 Risibot.prototype.choseMove = function() {
