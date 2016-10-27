@@ -138,7 +138,7 @@ PokeyI.prototype.evalSeeds = function(move) {
   if (this.bot.ennemy[0].volatiles.leechseed)
     return 0;
   
-  var danger = this.getDanger(this.bot.ennemy[0], this.bot.pokemon);
+  var d = this.getDanger(this.bot.ennemy[0], this.bot.pokemon);
   if (d < 0.3) // Ennemy could switch
     return 100;
   if (d < 0.8) // Ennemy will probably not switch
