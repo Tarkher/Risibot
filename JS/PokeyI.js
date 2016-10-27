@@ -171,7 +171,7 @@ PokeyI.prototype.getDanger = function(attacker, defender) {
 
   var potentialO = (this.getStat(attacker, 'spe') / 2 / (attacker.status == 'par' ? 4 : 1) + // We calculate an offensive power
     this.getStat(attacker, atkType) / 2 / ((attacker.status == 'brn' && atkType == 'atk') ? 2 : 1));
-  if (p1.status == 'slp')
+  if (attacker.status == 'slp')
     potentialO /= 3;
 
   var increased = false;
