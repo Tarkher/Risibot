@@ -240,6 +240,9 @@ PokeyI.prototype.getBulk = function(pokemon) {
 
 PokeyI.prototype.getDanger = function(attacker, defender) {
 
+	if (!attacker || !defender)
+		return 0;
+	
   var atkType; // We first try to determine what kind of attacker ennemy is.
   atkType = (this.getStat(attacker, 'atk') >= this.getStat(attacker, 'spa')) ? 'atk': 'spa';
 

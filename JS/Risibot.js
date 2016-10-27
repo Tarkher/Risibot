@@ -22,6 +22,9 @@ function Risibot() {
 };
 
 Risibot.prototype.choseMove = function() {
+	if (!this.pokemon || !this.ennemy[0])
+		return -1;
+	
   movesInterests = [0, 0, 0, 0];
   for (var moveType in this.moves) {
     for (var j = 0; j < this.moves[moveType].length; j++) {
@@ -236,10 +239,8 @@ Risibot.prototype.routine = function() {
   if (this.waitingForMe()) {
     if (this.pokemon && this.room.battle.mySide.active && !this.pokemon.fainted && this.movesParsed) {
       m = this.choseMove();
-      success = this.attack(m + 1);
-      if (success) {
-        this.lastMove = m;
-      }
+			if (m != -1)
+				this.attack(m + 1);
     } else { //Chose another 
       placeholder = 1;
     }
