@@ -20,8 +20,8 @@ BattleRoles = {
 
 PokeyI.prototype.evalDamagingMove = function(move) {
 
-  coef = this.getWeaknesses(this.bot.ennemy[0])[move.baseType];
-  for (i = 0; i < this.bot.pokemon.types.length; i++) {
+  coef = this.getWeaknesses(this.bot.ennemy[0])[move.baseType]; // Type effectiveness
+  for (i = 0; i < this.bot.pokemon.types.length; i++) { // STAB
     if (this.bot.pokemon && this.bot.pokemon.types[i] == move.baseType)
       coef *= 1.5;
   }
