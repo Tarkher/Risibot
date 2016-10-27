@@ -148,6 +148,79 @@ PokeyI.prototype.evalSeeds = function(move) {
   return 0 // ABORT MISSION
 };
 
+PokeyI.prototype.evalDefog = function(move) {
+	
+	if (!this.bot.room.battle.mySide.sideConditions)
+		return 0;
+	
+	var indic = 0;
+	for (var condition in this.bot.room.battle.mySide.sideConditions) {
+		var c = this.bot.room.battle.mySide.sideConditions[condition];
+		switch (c) {
+			case 'toxicspikes':
+			case 'spikes':
+				indic += 1;
+				break;
+			case 'stickyweb':
+			case 'stealthrock':
+				indic += 2;
+				break;
+			case 'reflect':
+			case 'safeguard':
+			case 'lightscreen':
+				indic -= 2;
+				break;
+		}
+	}
+	for (var condition in this.bot.room.battle.yourSide.sideConditions) {
+		var c = this.bot.room.battle.yourSide.sideConditions[condition];
+		switch (c) {
+			case 'toxicspikes':
+			case 'spikes':
+				indic -= 1;
+				break;
+			case 'stickyweb':
+			case 'stealthrock':
+				indic -= 2;
+				break;
+			case 'reflect':
+			case 'safeguard':
+			case 'lightscreen':
+				indic += 2;
+				break;
+		}
+	}
+	
+	if (indic < 0) // Terrain is good for the bot
+		return 0;
+	else
+		return 50 * indic;
+};
+
+PokeyI.prototype.evalRoar = function(move) {
+	
+	coef = 1.0;
+	for (c in this.bot.room.battle.yourSide.sideConditions) {
+		switch (this.bot.room.battle.yourSide.sideConditions[c]) {
+			case 'stealthrock': // Will damage and destabilize
+			case 'spikes':
+			case 'toxicspikes':
+			case 'reflect': // Will temporize
+			case 'lightscreen':
+			case 'safeguard':
+				coef += 1.0;
+		}
+	}
+	for (b in this.bot.ennemy[0].boosts) {
+		coef += this.bot.ennemy[0].boosts[b];
+	}
+	
+	coef = Math.max(0.0, coef - this.getDanger(this.bot.ennemy[0], this.bot.pokemon));
+	
+	return 70 * coef;
+	
+};
+
 PokeyI.prototype.hasType = function(pokemon, type) {
   for (var i = 0; i < pokemon.types.length; i++) {
     if (pokemon.types[i] == type)
