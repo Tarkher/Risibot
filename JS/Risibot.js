@@ -167,6 +167,9 @@ Risibot.prototype.parseMoves = function() {
   }
 
   console.log("Risibot: parseMoves: " + this.buttonsMoves.length + " moves parsed.");
+	e = document.getElementsByName("megaevo");
+	if (e.length)
+		e[0].setAttribute("checked", true);
   this.movesParsed = true;
 };
 
