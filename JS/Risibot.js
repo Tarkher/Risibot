@@ -7,7 +7,6 @@ function Risibot() {
   this.parsingMoves = false;
   this.moves = undefined;
   this.buttonsMove = undefined;
-  this.lastMove = 0;
 
   this.ennemyParsed = false;
   this.ennemy = undefined;
@@ -46,6 +45,15 @@ Risibot.prototype.choseMove = function() {
           break;
         case 'spin':
           movesInterests[k - 1] = this.AI.evalsSpin(move);
+          break;
+        case 'seeds':
+          movesInterests[k - 1] = this.AI.evalSeeds(move);
+          break;
+        case 'defog':
+          movesInterests[k - 1] = this.AI.evalDefog(move);
+          break;
+        case 'roar':
+          movesInterests[k - 1] = this.AI.evalRoar(move);
           break;
       }
       console.log("Risibot: choseMove: Move " + move.name + ".");
@@ -158,6 +166,9 @@ Risibot.prototype.parseMoves = function() {
   }
 
   console.log("Risibot: parseMoves: " + this.buttonsMoves.length + " moves parsed.");
+	e = document.getElementsByName("megaevo");
+	if (e.length)
+		e[0].setAttribute("checked", true);
   this.movesParsed = true;
 };
 
@@ -171,7 +182,7 @@ Risibot.prototype.getPokemon = function() {
   pokemonGeneral = this.room.battle.mySide.active[0];
   if (pokemonPerso && pokemonGeneral) {
     this.pokemonParsed = true;
-    this.pokemon = new fullPokemon(pokemonPerso, pokemonGeneral);
+    this.pokemon = new FullPokemon(pokemonPerso, pokemonGeneral);
     console.log("Risibot: getPokemon: Pokemon parsed.");
   }
 };
