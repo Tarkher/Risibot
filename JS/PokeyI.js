@@ -408,7 +408,7 @@ PokeyI.prototype.getPotentialWall = function(pokemon) { // Can pokemon be a good
 	var spd = this.getStat(pokemon, 'spd');
 	var hp = this.getStat(pokemon, 'hp');
 	
-	var mini = Math.min(def, spd);
+	mini = ( (this.canBurn(pokemon)) ? spd : Math.min(def, spd) );
   var coefD = (mini <= 60) ? 1 : (mini <= 80) ? 2 : (mini <= 100) ? 3 : 4;
 	var coefH = (hp <= 60) ? 1 : (hp <= 80) ? 2 : (hp <= 100) ? 3 : 4;
 	
@@ -418,27 +418,31 @@ PokeyI.prototype.getPotentialWall = function(pokemon) { // Can pokemon be a good
 	
 	var coefWeak = parseInt((this.weaknessToInt(pokemon) + 15.5) / 30 * 8) + 1;
 	
-	//// Multiplicators 1 - 8
+	//// Bonus points 
 	
   var coefMoves = 1.0;
 	coefMoves += this.canHeal(pokemon); // Increases greatly the staying power
-	if (coefMoves == 1)
-		return 0;	
   if (this.canCure(pokemon)) // Not as important, but cool.
     coefMoves += 0.5;
 	if (this.hasAbility(pokemon, "Prankster")) // A major stalling talent
-		coefMoves += 2;	
+		coefMoves += 8;	
 	if (this.hasAbility(pokemon, "Gale Wings")) // Priority roost
-		coefMoves += 1;
+		coefMoves += 4;
 	if (this.hasAbility(pokemon, "Poison Heal")) //Is it necessary to tell something ?
-		coefMoves += 2;
+		coefMoves += 8;
 	if (this.hasAbility(pokemon, "Magic Bounce")) // A major stalling talent
-		coefMoves += 1;
+		coefMoves += 5;
 	if (this.canSetupDef(pokemon, (def > spd) ? 'spd' : 'def')) // A great advantage
-		coefMoves += 1.5;
+		coefMoves += 2;
   
-	coefMoves += this.passiveHeal(pokemon); // Leech seed / ingrain ... / POISON HEAL !!	
+	coefMoves += this.passiveHeal(pokemon); // Leech seed / ingrain ... / POISON HEAL !!
+
+	// Crocune-like
 	
+	if (mini > 100 && hp >= 100 && this.canBurn(pokemon) && this.canSetupDef(pokemon, 'spd'))
+		coefMoves += 3;
+	else if (!this.canHeal(pokemon))
+		return 0;
 	
 	return coefStats + coefWeak + parseInt(coefMoves);	
 };
@@ -483,6 +487,31 @@ PokeyI.prototype.canHeal = function(pokemon) { // If pokemon can learn viable he
     }
   }
   return healMax;
+};
+
+PokeyI.prototype.canBurn = function(pokemon) { // If pokemon can learn viable heal moves
+
+  var name = pokemon.species.toLowerCase();
+	if (pokemon.baseSpecies)
+		name = pokemon.baseSpecies.toLowerCase();
+		
+	if (!BattleLearnsets[name])
+		return false;
+	
+	var healMax = 0;
+  for (var move in BattleLearnsets[name].learnset) {
+    switch (move) {
+      case 'sacredfire':
+      case 'scald':
+      case 'willowisp':
+      case 'steameruption':
+      case 'iceburn':
+      case 'inferno':
+      case 'lavaplume':
+				return true;
+    }
+  }
+  return false;
 };
 
 PokeyI.prototype.canCure = function(pokemon) { // If pokemon can learn viable heal moves
