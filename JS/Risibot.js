@@ -227,3 +227,17 @@ Risibot.prototype.routine = function() {
     that.routine();
   }, 500);
 };
+
+Risibot.prototype.getField = function() { // Get the current status of the field DONE
+    var f = new Field();
+    
+    f.isLightScreen[0] = (typeof this.room.battle.mySide.sideConditions.lightScreen !== 'undefined');
+    f.isLightScreen[1] = (typeof this.room.battle.yourSide.sideConditions.lightScreen !== 'undefined');
+    f.isReflect[0] = (typeof this.room.battle.mySide.sideConditions.reflect !== 'undefined');
+    f.isReflect[1] = (typeof this.room.battle.yourSide.sideConditions.reflect !== 'undefined');
+    
+    f.weather = (this.room.battle.weather == 'sunnyday') ? "Sun" : (this.room.battle.weather == 'raindance') ? "Rain" : (this.room.battle.weather == 'hail') ? "Hail" : "";
+    
+    f.isGravity = (this.room.battle.weather == "pseudo");
+    
+}

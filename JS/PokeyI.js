@@ -488,30 +488,45 @@ PokeyI.prototype.getStat = function(pokemon, stat) {
   return pokemon.baseStats[stat];
 };
 
-PokeyI.prototype.hasAbility = function(pokemon, ab) {
+
+PokeyI.prototype.hasAbility = function(pokemon, ab) { 
+  var hasAb = false;
+  
+  var isMega = false;
+  if (pokemon.forme == "Mega")
+    isMega = true;
+  
   var name = pokemon.species.toLowerCase();
   if (pokemon.baseSpecies)
     name = pokemon.baseSpecies.toLowerCase();
+    
+  if (isMega)
+    name = name + "mega";
 
   if (!BattlePokedex[name])
-    return false
+    return false;
 
   for (var a in BattlePokedex[name].abilities) {
     switch (BattlePokedex[name].abilities[a]) {
       case ab:
-        return true;
+        hasAb = true;
     }
   }
-	
-	if (ab == "Magic Bounce") {
-		switch (name) {
-			case "sableye":
-			case "diancie":
-			case "absol":
-				return true;
-		}
-	}
-  return false;
+  
+  if (!isMega) {
+    name = name + "mega";
+      
+    if (!BattlePokedex[name])
+      return hasAb;
+    
+    for (var a in BattlePokedex[name].abilities) {
+      switch (BattlePokedex[name].abilities[a]) {
+        case ab:
+          hasAb = true;
+      }
+    }
+  }
+  return hasAb;
 };
 
 PokeyI.prototype.getMaxDamageTaken = function(pokemon) { // How much damage can we take at this turn

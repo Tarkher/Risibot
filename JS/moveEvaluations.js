@@ -24,7 +24,7 @@ Risibot.prototype.choseMove = function() {
           movesInterests[k - 1] = this.AI.evalHeal(move);
           break;
         case 'spin':
-          movesInterests[k - 1] = this.AI.evalsSpin(move);
+          movesInterests[k - 1] = this.AI.evalSpin(move);
           break;
         case 'seeds':
           movesInterests[k - 1] = this.AI.evalSeeds(move);
