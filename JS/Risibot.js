@@ -20,7 +20,9 @@ function Risibot() {
 
   this.AI = new PokeyI(this);
 	this.stopSignal = false;
-
+	
+	console.log(this);
+	
   this.firstMessages(0);
 };
 

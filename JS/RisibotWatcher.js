@@ -30,4 +30,4 @@ RisibotWatcher = function() { // Allows to manage Risibot from the tchat
 };
 
 watcher = new RisibotWatcher();
-watcherroutine();
+watcher.routine();
