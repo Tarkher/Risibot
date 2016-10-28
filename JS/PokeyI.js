@@ -502,6 +502,15 @@ PokeyI.prototype.hasAbility = function(pokemon, ab) {
         return true;
     }
   }
+	
+	if (ab == "Magic Bounce") {
+		switch (name) {
+			case "sableye":
+			case "diancie":
+			case "absol":
+				return true;
+		}
+	}
   return false;
 };
 

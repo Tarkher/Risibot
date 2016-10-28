@@ -84,7 +84,8 @@ PokeyI.prototype.evalStatus = function(move) {
     (move.status == "par" && this.hasType(this.bot.ennemy, "Electric")) ||
     (move.status == "brn" && this.hasType(this.bot.ennemy, "Fire")) ||
     (move.baseType == "Grass" && this.hasType(this.bot.ennemy, "Grass")) ||
-    (move.status == "tox" && this.hasType(this.bot.ennemy, "Poison"))) {
+    (move.status == "tox" && this.hasType(this.bot.ennemy, "Poison")) ||
+     this.hasAbility(this.bot.ennemy, "Magic Bounce")) {
     return 0;
   }
 
@@ -110,7 +111,7 @@ PokeyI.prototype.evalStatus = function(move) {
     return 150;
   return 400;
 
-};
+};	
 
 PokeyI.prototype.evalSpin = function(move) {
 
@@ -123,7 +124,7 @@ PokeyI.prototype.evalSpin = function(move) {
 
 PokeyI.prototype.evalTraps = function(move) {
 
-  if (this.getDanger(this.bot.ennemy, this.bot.pokemon) > 100)
+  if (this.getDanger(this.bot.ennemy, this.bot.pokemon) > 100 || this.hasAbility(this.bot.ennemy, "Magic Bounce"))
     return 0;
 
   switch (move.id) {
@@ -162,7 +163,7 @@ PokeyI.prototype.evalHeal = function(move) {
 
 PokeyI.prototype.evalSeeds = function(move) {
 
-  if (this.bot.ennemy.volatiles.leechseed || this.hasType(this.bot.ennemy, "Grass"))
+  if (this.bot.ennemy.volatiles.leechseed || this.hasType(this.bot.ennemy, "Grass") || this.hasAbility(this.bot.ennemy, "Magic Bounce"))
     return 0;
   
   var d = this.getDanger(this.bot.ennemy, this.bot.pokemon);
@@ -225,6 +226,9 @@ PokeyI.prototype.evalDefog = function(move) {
 };
 
 PokeyI.prototype.evalRoar = function(move) {
+	
+	if (this.hasAbility(this.bot.ennemy, "Magic Bounce"))
+		return 0;
 	
 	coef = 1.0;
 	for (c in this.bot.room.battle.yourSide.sideConditions) {
