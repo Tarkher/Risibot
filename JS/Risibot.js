@@ -8,7 +8,7 @@ function Risibot() {
   this.movesParsed = false;
   this.parsingMoves = false;
   this.moves = undefined;
-  this.buttonsMove = undefined;
+  this.buttonsMoves = undefined;
 
   this.ennemyParsed = false;
   this.ennemy = undefined;
@@ -42,7 +42,7 @@ Risibot.prototype.firstMessages = function(i) {
 			this.say("Good luck human.");
 			return;
 	}
-	that = this;
+	var that = this;
 	console.log(this);
 	setTimeout( function() { that.firstMessages(i + 1); }, 1000 );
 };
@@ -79,7 +79,7 @@ Risibot.prototype.parseMoves = function() {
   this.buttonsMoves = document.getElementsByName("chooseMove");
   if (this.buttonsMoves.length == 0) {
     console.log("Risibot: parseMoves: " + this.buttonsMoves.length + " moves parsed. Retrying...");
-    that = this;
+    var that = this;
     this.parsingMoves = true;
     setTimeout(function() {
       that.parseMoves();
@@ -232,7 +232,7 @@ Risibot.prototype.routine = function() {
 	if (this.stopSignal)
 		return;
 	
-  that = this;
+  var that = this;
   setTimeout(function() {
     that.routine();
   }, 500);

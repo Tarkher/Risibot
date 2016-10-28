@@ -24,7 +24,7 @@ RisibotWatcher = function() { // Allows to manage Risibot from the tchat
 			}
 		}
 		
-		that = this;
+		var that = this;
 		setTimeout(function() { that.routine(); }, 500);
 	};
 };
