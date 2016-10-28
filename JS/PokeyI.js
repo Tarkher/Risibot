@@ -505,7 +505,6 @@ PokeyI.prototype.hasAbility = function(pokemon, ab) {
 	return false;
 };
 
-
 PokeyI.prototype.getMaxDamageTaken = function(pokemon) { // How much damage can we take at this turn
 	
 	// First we find the closest DC set.
@@ -540,6 +539,7 @@ PokeyI.prototype.getMaxDamageTaken = function(pokemon) { // How much damage can 
 	var ennemyName = checkExeptions(this.bot.ennemy.species);
 	for (var set in setdex[ennemyName]) {
         setName = ennemyName + " (" + set + ")";
+        var ennemyPkm = new PokemonCalc(setName);
 		dmg = calculateAllMoves(ennemyPkm, closestPkm, f);
 		for (var i = 0; i < dmg[0].length; i++) {
 			if (dmg[0][i].damage[15] > maxiDmg[0]) // false if it does not exist

@@ -19,4 +19,5 @@ function FullPokemon(pokemonPerso, pokemonGeneral) { // Easier to manipulate
   this.fainted = pokemonGeneral.fainted;
   this.weightkg = pokemonGeneral.weightkg;
   this.baseStats = pokemonGeneral.baseStats;
+	this.baseStats = pokemonGeneral.name;
 }

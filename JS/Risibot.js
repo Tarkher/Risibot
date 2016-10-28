@@ -170,7 +170,7 @@ Risibot.prototype.getEnnemyPokemon = function() {
   this.ennemy = this.room.battle.yourSide.active[0];
   if (this.ennemy) {
     this.ennemyParsed = true;
-    console.log("Risibot: getPokemon: " + this.ennemy.name + " parsed.");
+    console.log("Risibot: getPokemon: Ennemy " + this.ennemy.name + " parsed.");
   }
 };
 
