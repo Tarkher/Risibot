@@ -155,7 +155,7 @@ PokeyI.prototype.evalDefog = function(move) {
 	
 	var indic = 0;
 	for (var condition in this.bot.room.battle.mySide.sideConditions) {
-		var c = this.bot.room.battle.mySide.sideConditions[condition];
+		var c = this.bot.room.battle.mySide.sideConditions[condition][0];
 		switch (c) {
 			case 'toxicspikes':
 			case 'spikes':
@@ -173,7 +173,7 @@ PokeyI.prototype.evalDefog = function(move) {
 		}
 	}
 	for (var condition in this.bot.room.battle.yourSide.sideConditions) {
-		var c = this.bot.room.battle.yourSide.sideConditions[condition];
+		var c = this.bot.room.battle.yourSide.sideConditions[condition][0];
 		switch (c) {
 			case 'toxicspikes':
 			case 'spikes':
