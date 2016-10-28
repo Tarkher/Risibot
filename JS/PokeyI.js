@@ -555,9 +555,10 @@ PokeyI.prototype.getMaxDamageTaken = function(pokemon) { // How much damage can 
   for (var i = 0; i < pokemon.moves.length; i++) {
     var move = pokemon.moves[i];
     if (pokemon.moves[i].indexOf("hiddenpower") != -1) {
-      var tmp = "Hidden Power ";
-      for (var i = 11; i < move.indexOf("60"); i++)
-        tmp = tmp + move[i];
+      var tmp = "";
+      for (var j = 0; j < move.indexOf("60"); j++) {
+        tmp = tmp + move[j];
+      }
       move = tmp;
     }
     m = Moves[BattleMovedex[move].name];
