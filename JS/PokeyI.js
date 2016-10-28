@@ -553,7 +553,14 @@ PokeyI.prototype.getMaxDamageTaken = function(pokemon) { // How much damage can 
   closestPkm.rawStats.sp = pokemon.stats.spe;
 
   for (var i = 0; i < pokemon.moves.length; i++) {
-    m = Moves[BattleMovedex[pokemon.moves[i]].name];
+    var move = pokemon.moves[i];
+    if (pokemon.moves[i].indexOf("hiddenpower") != -1) {
+      var tmp = "Hidden Power ";
+      for (var i = 11; i < move.indexOf("60"); i++)
+        tmp = tmp + move[i];
+      move = tmp;
+    }
+    m = Moves[BattleMovedex[move].name];
     if (m)
       closestPkm.moves[i] = m;
     else
