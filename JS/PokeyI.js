@@ -63,7 +63,6 @@ PokeyI.prototype.getDanger = function(attacker, defender) {
 };
 
 PokeyI.prototype.getMultiplicator = function(pokemon, stat) {
-  console.log(pokemon.boosts[stat]);
   if (pokemon.boosts[stat] > 0)
     return 1.0 + 0.5 * pokemon.boosts[stat];
   else if (pokemon.boosts[stat] < 0)
@@ -608,3 +607,13 @@ PokeyI.prototype.getSetDistance = function(pkPerso, pkCal) { // Shows how differ
   }
   return Math.sqrt(d);
 };
+
+/////////////////////// UNSAFE ZONE //////////////////////////////////
+
+PokeyI.prototype.isFaster = function(p1, p2) { // NOT TESTED
+    s1 = (p1.stats) ? p1.stats.spe : (p1.baseStats) ? p1.baseStats.spe : -1;
+    s2 = (p1.stats) ? p1.stats.spe : (p1.baseStats) ? p1.baseStats.spe : -1;
+    if (s1 == -1 || s2 == -1)
+        return false;    
+    return s1 > s2;
+}

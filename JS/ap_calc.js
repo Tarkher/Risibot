@@ -77,7 +77,7 @@ function PokemonCalc(pokeInfo) {
 }
 
 function Field() {
-  var format = $("input:radio[name='format']:checked").val();
+  var format = "Singles";
   var isGravity = false;
   var isSR = [false, false]; // stealth rock
   var weather = "None";

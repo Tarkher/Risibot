@@ -35,6 +35,9 @@ Risibot.prototype.choseMove = function() {
         case 'roar':
           movesInterests[k - 1] = this.AI.evalRoar(move);
           break;
+				case 'painSplit':
+          movesInterests[k - 1] = this.AI.evalPainSplit(move);
+          break;
       }
       console.log("Risibot: choseMove: Move " + move.name + ".");
     }
@@ -43,7 +46,6 @@ Risibot.prototype.choseMove = function() {
   choice = getMaxIndex(movesInterests);
   return choice;
 };
-
 
 PokeyI.prototype.evalDamagingMove = function(move) {
 
@@ -73,21 +75,27 @@ PokeyI.prototype.evalDamagingMove = function(move) {
     move.accuracy = 100;
 
   volatileEffects = this.getMultiplicator(this.bot.pokemon, (move.category == "physical") ? 'atk' : 'spa');
+	
+	if (this.bot.pokemon.baseAbility == "Technician" && move.basePower <= 60)
+		move.basePower *= 1.5;
 
   return coef * move.basePower * (move.accuracy / 100) * volatileEffects;
 
 };
 
-PokeyI.prototype.evalStatus = function(move) {
-  coef = 1.0;
+PokeyI.prototype.evalStatus = function(move) { // Is this status move worth it ?
+	
   if (this.bot.ennemy.status != "" ||
     (move.status == "par" && this.hasType(this.bot.ennemy, "Electric")) ||
     (move.status == "brn" && this.hasType(this.bot.ennemy, "Fire")) ||
     (move.baseType == "Grass" && this.hasType(this.bot.ennemy, "Grass")) ||
     (move.status == "tox" && this.hasType(this.bot.ennemy, "Poison")) ||
-     this.hasAbility(this.bot.ennemy, "Magic Bounce")) {
+    (this.hasAbility(this.bot.ennemy, "Magic Bounce")) ||
+		(this.hasAbility(this.bot.ennemy, "Synchronize"))) {
     return 0;
   }
+	
+	coef = (this.canCure(this.bot.ennemy)) ? 0.5 : 1; // Later, canCure will be a probability
 
   switch (move.status) {
     case "par":
@@ -104,19 +112,19 @@ PokeyI.prototype.evalStatus = function(move) {
   }
 
   if (coef < 0.5)
-    return 30;
+    return 30 * coef;
   if (coef < 1)
-    return 60;
+    return 60 * coef;
   if (coef < 1.2)
-    return 150;
-  return 400;
+    return 150 * coef;
+  return 400 * coef;
 
 };	
 
-PokeyI.prototype.evalSpin = function(move) {
+PokeyI.prototype.evalSpin = function(move) { // Is this spin worth it ?
 
-  if (jQuery.isEmptyObject(this.bot.room.battle.mySide.sideConditions)) {
-    console.log("Risibot: evalSpin: There is nothing to spin.");
+  if ( (jQuery.isEmptyObject(this.bot.room.battle.mySide.sideConditions) && !this.bot.pokemon.volatiles.leechseed) || 
+			this.hasType(this.bot.ennemy, "Ghost") {
     return 0;
   }
   return 150;
@@ -148,15 +156,15 @@ PokeyI.prototype.evalTraps = function(move) {
 PokeyI.prototype.evalHeal = function(move) {
 
   hp = this.bot.pokemon.hp / this.bot.pokemon.hpmax;
-  if (hp < 25)
+  if (hp < 0.25)
     return 1500;
-  if (hp < 50)
+  if (hp < 0.50)
     return 1000;
-  if (hp < 60)
+  if (hp < 0.60)
     return 500;
-  if (hp < 75)
+  if (hp < 0.75)
     return 100;
-  if (hp < 90)
+  if (hp < 0.90)
     return 30;
   return 0;
 };
@@ -250,4 +258,40 @@ PokeyI.prototype.evalRoar = function(move) {
 	
 	return 70 * coef;
 	
+};
+
+
+/////////////////// UNSSAFE ZONE //////////////////////////////////////
+
+PokeyI.prototype.evalPainSplit = function(move) { // NOT TESTED NOW
+
+  expectedDamage = this.getMaxDamageTaken(this.bot.pokemon, this.bot.ennemy)[1];
+  ennemyHP = parseInt((parseInt(2 * this.bot.ennemy.baseStats * this.bot.ennemy.level / 100) + 10 + this.bot.ennemy.level) * this.bot.ennemy.hp / 100);
+
+  if (this.isFaster(this.bot.pokemon, this.bot.ennemy)) { // If I should hit first
+    newHP = parseInt((ennemyHP + this.bot.pokemon.hp) / 2); // Hp after pain split
+
+    if (newHP < this.bot.pokemon.hp) // We will lose HP
+      return 0;
+
+    if (newHP < expectedDamage) { // We will probably die
+      ratio = (this.bot.pokemon.hp / this.bot.pokemon.maxhp);
+      return (ratio < 0.25) ? 100 : (ratio < 0.5) ? 50 : 0;
+    }
+
+    return (newHP / this.bot.pokemon.hp) * 100;
+  }
+
+  // If I will hit in second
+
+  expectedHP = this.bot.pokemon.hp - expectedDamage;
+  if (expectedHp < 0) // We will die before having done anything
+    return 150; // FINAL GAMBIT
+
+  newHP = parseInt((ennemyHP + expectedHP) / 2);
+
+  if (newHP < expectedHP) // We will lose HP
+    return 0;
+
+  return (newHP / expectedHP) * 100;
 };

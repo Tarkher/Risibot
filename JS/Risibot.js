@@ -2,7 +2,7 @@ VER = "0.3";
 
 function Risibot() {
 
-  this.room = getRoom();
+  this.room = room;
   this.currentTurn = 0;
 
   this.movesParsed = false;
@@ -67,7 +67,8 @@ Risibot.prototype.parseMoves = function() {
     'uTurn': [],
     'voltSwitch': [],
     'trick': [],
-    'fakeOut': []
+    'fakeOut': [],
+		'painSplit': []
   };
 
   movesTab = [];
@@ -114,6 +115,8 @@ Risibot.prototype.parseMoves = function() {
       this.moves.trick.push([m, k]);
     else if (m.id == 'fakeout')
       this.moves.fakeOut.push([m, k]);
+		else if (m.id == 'painsplit')
+      this.moves.spin.push([m, k]);
 
     else if (m.category == 'Status') {
       if (m.target == 'foeSide')
