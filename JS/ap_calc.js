@@ -312,6 +312,8 @@ function setSelectValueIfValid(select, value, fallback) {
     select.val(select.children("option[value='" + value + "']").length !== 0 ? value : fallback);
 }
 
+console.log("h");
+
 function PokemonCalc(pokeInfo) {
     if (typeof pokeInfo === "string") { // in this case, pokeInfo is the id of an individual setOptions value whose moveset's tier matches the selected tier(s)
         this.name = pokeInfo.substring(0, pokeInfo.indexOf(" ("));
@@ -408,6 +410,8 @@ function PokemonCalc(pokeInfo) {
     }
 }
 
+console.log("i");
+
 function getMoveDetails(moveInfo) {
     var moveName = moveInfo.find("select.move-selector").val();
     var defaultDetails = moves[moveName];
@@ -452,6 +456,8 @@ function Field() {
     };
 }
 
+console.log("j");
+
 function SideCalc(format, terrain, weather, isGravity, isSR, spikes, isReflect, isLightScreen, isForesight, isHelpingHand, isFriendGuard) {
     this.format = format;
     this.terrain = terrain;
@@ -467,6 +473,8 @@ function SideCalc(format, terrain, weather, isGravity, isSR, spikes, isReflect, 
 }
 
 var gen, genWasChanged, notation, pokedex, setdex, typeChart, moves, abilities, items, STATS, calcHP, calcStat;
+
+console.log("k");
 
 $(".gen").change(function () {
     gen = ~~$(this).val();
@@ -559,6 +567,8 @@ $(".notation").change(function () {
     notation = $(this).val();
 });
 
+console.log("l");
+
 function clearField() {
     $("#singles-format").prop("checked", true);
     $("#clear").prop("checked", true);
@@ -626,6 +636,8 @@ function getSelectOptions(arr, sort) {
     return r;
 }
 
+console.log("m");
+
 $(document).ready(function() {
     $("#gen6").prop("checked", true);
     $("#gen6").change();
@@ -663,3 +675,5 @@ $(document).ready(function() {
     $(".set-selector").val(getSetOptions()[gen < 4 ? 3 : 1].id);
     $(".set-selector").change();
 });
+
+console.log("n");
