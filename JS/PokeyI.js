@@ -20,14 +20,14 @@ BattleRoles = {
 
 PokeyI.prototype.evalDamagingMove = function(move) {
 
-  coef = this.getWeaknesses(this.bot.ennemy[0])[move.baseType]; // Type effectiveness
+  coef = this.getWeaknesses(this.bot.ennemy)[move.baseType]; // Type effectiveness
   for (i = 0; i < this.bot.pokemon.types.length; i++) { // STAB
     if (this.bot.pokemon && this.bot.pokemon.types[i] == move.baseType)
       coef *= 1.5;
   }
 
   if (move.id == "lowkick") {
-    wgt = this.bot.ennemy[0].weightkg;
+    wgt = this.bot.ennemy.weightkg;
     if (wgt < 10)
       move.basePower = 20;
     else if (wgt < 25)
@@ -53,26 +53,26 @@ PokeyI.prototype.evalDamagingMove = function(move) {
 
 PokeyI.prototype.evalStatus = function(move) {
   coef = 1.0;
-  if (this.bot.ennemy[0].status != "" ||
-    (move.status == "par" && this.hasType(this.bot.ennemy[0], "Electric")) ||
-    (move.status == "brn" && this.hasType(this.bot.ennemy[0], "Fire")) ||
-    (move.baseType == "Grass" && this.hasType(this.bot.ennemy[0], "Grass")) ||
-    (move.status == "tox" && this.hasType(this.bot.ennemy[0], "Poison"))) {
+  if (this.bot.ennemy.status != "" ||
+    (move.status == "par" && this.hasType(this.bot.ennemy, "Electric")) ||
+    (move.status == "brn" && this.hasType(this.bot.ennemy, "Fire")) ||
+    (move.baseType == "Grass" && this.hasType(this.bot.ennemy, "Grass")) ||
+    (move.status == "tox" && this.hasType(this.bot.ennemy, "Poison"))) {
     return 0;
   }
 
   switch (move.status) {
     case "par":
-      coef *= (this.getStat(this.bot.ennemy[0], "spe") / 100);
+      coef *= (this.getStat(this.bot.ennemy, "spe") / 100);
       break;
     case "brn":
-      coef *= (this.getStat(this.bot.ennemy[0], "atk") / 100);
+      coef *= (this.getStat(this.bot.ennemy, "atk") / 100);
       break;
     case "slp":
-      coef *= (this.getDanger(this.bot.ennemy[0], this.bot.pokemon));
+      coef *= (this.getDanger(this.bot.ennemy, this.bot.pokemon));
       break;
     case "tox":
-      coef *= (this.getBulk(this.bot.ennemy[0]) / 100);
+      coef *= (this.getBulk(this.bot.ennemy) / 100);
   }
 
   if (coef < 0.5)
@@ -96,7 +96,7 @@ PokeyI.prototype.evalSpin = function(move) {
 
 PokeyI.prototype.evalTraps = function(move) {
 
-  if (this.getDanger(this.bot.ennemy[0], this.bot.pokemon) > 100)
+  if (this.getDanger(this.bot.ennemy, this.bot.pokemon) > 100)
     return 0;
 
   switch (move.id) {
@@ -135,10 +135,10 @@ PokeyI.prototype.evalHeal = function(move) {
 
 PokeyI.prototype.evalSeeds = function(move) {
 
-  if (this.bot.ennemy[0].volatiles.leechseed || this.hasType(this.bot.ennemy[0], "Grass"))
+  if (this.bot.ennemy.volatiles.leechseed || this.hasType(this.bot.ennemy, "Grass"))
     return 0;
   
-  var d = this.getDanger(this.bot.ennemy[0], this.bot.pokemon);
+  var d = this.getDanger(this.bot.ennemy, this.bot.pokemon);
   if (d < 0.3) // Ennemy could switch
     return 100;
   if (d < 0.8) // Ennemy will probably not switch
@@ -211,11 +211,11 @@ PokeyI.prototype.evalRoar = function(move) {
 				coef += 1.0;
 		}
 	}
-	for (b in this.bot.ennemy[0].boosts) {
-		coef += this.bot.ennemy[0].boosts[b];
+	for (b in this.bot.ennemy.boosts) {
+		coef += this.bot.ennemy.boosts[b];
 	}
 	
-	coef = Math.max(0.0, coef - this.getDanger(this.bot.ennemy[0], this.bot.pokemon));
+	coef = Math.max(0.0, coef - this.getDanger(this.bot.ennemy, this.bot.pokemon));
 	
 	return 70 * coef;
 	
@@ -371,8 +371,8 @@ PokeyI.prototype.getWeaknesses = function(poke) { //Takes a fullPokemon for argu
 PokeyI.prototype.evalSwitch = function(pokemon) {
   var coef = 100.0;
   var weaknesses = this.getWeaknesses(pokemon);
-  for (var i = 0; i < this.bot.ennemy[0].types; i++)
-    coef *= (1.0 / weaknesses[this.bot.ennemy[0][i]]);
+  for (var i = 0; i < this.bot.ennemy.types; i++)
+    coef *= (1.0 / weaknesses[this.bot.ennemy[i]]);
 };
 
 PokeyI.prototype.getExpectedRole = function(pokemon) {
@@ -709,49 +709,54 @@ PokeyI.prototype.hasAbility = function(pokemon, ab) {
 };
 
 
-
-//// UNVERIFIED STUFF
-
-
 PokeyI.prototype.getMaxDamageTaken = function(pokemon) { // How much damage can we take at this turn
 	
 	// First we find the closest DC set.
+    
+    var name = checkExeptions(pokemon.species);
+    var setName;
+    for (setName in setdex[name])
+        if (setName)
+            break;
 	
-	var name = checkExeptions(pokemon.species);
-	var currentSet = "";
-	var currentDist = 0;
-	for (var set in setdex[name]) {
-		var pkCal = new PokemonCalc(setdex[name][set]);
-		var d = this.getSetDistance(pokemon, pkCal);
-		if (d < currentDist) {
-			currentDist = d;
-			currentSet = set;
-		}
-		if (!d) // If we find an exact set
-			break;
-	}
-	if (currentSet == "")
-		return -1;
-	
-	var closestPkm = new PokemonCalc(setdex[name][currentSet]);
+    setName = name + " (" + setName + ")";
+	var closestPkm = new PokemonCalc(setName);
+    if (!closestPkm)
+        return [-1, -1];
+    
+    closestPkm.maxHP = pokemon.maxhp;
+    closestPkm.curHP = pokemon.hp;
+    closestPkm.rawStats.at = pokemon.stats.atk;
+    closestPkm.rawStats.df = pokemon.stats.def;
+    closestPkm.rawStats.sa = pokemon.stats.spa;
+    closestPkm.rawStats.sd = pokemon.stats.spd;
+    closestPkm.rawStats.sp = pokemon.stats.spe;
+    
+    for (var i = 0; i < pokemon.moves.length; i++) {
+        closestPkm.moves[i] = Moves[BattleMovedex[pokemon.moves[i]].name];
+    }
 	
 	// We look for the maximum amount of damage we can take
 	
-	var maxiDmg = 0;
+	var maxiDmg = [0, 0];
 	var f = new Field();
-	var ennemyName = checkExeptions(this.bot.ennemy[0].species);
+	var ennemyName = checkExeptions(this.bot.ennemy.species);
 	for (var set in setdex[ennemyName]) {
-		ennemyPkm = new PokemonCalc(setdex[ennemyName][set]);
-		dmg = calculateAllMoves(p1, p2, f);
-		for (var i = 0; i < dmg.length; i++) {
-			if (dmg[i][15] > maxiDmg) // false if it does not exist
-				maxiDmg = dmg[i][15];
+        setName = ennemyName + " (" + set + ")";
+		dmg = calculateAllMoves(ennemyPkm, closestPkm, f);
+		for (var i = 0; i < dmg[0].length; i++) {
+			if (dmg[0][i].damage[15] > maxiDmg[0]) // false if it does not exist
+				maxiDmg[0] = dmg[0][i].damage[15];
+		}
+        for (var i = 0; i < dmg[1].length; i++) {
+			if (dmg[1][i].damage[15] > maxiDmg[1]) // false if it does not exist
+				maxiDmg[1] = dmg[1][i].damage[15];
 		}
 	}
 	
 	// Todo : field modificators (rain, sun, ...) + multiplicators
 	
-	return maxDmg;
+	return maxiDmg;
 	
 };
 

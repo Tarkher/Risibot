@@ -9,6 +9,7 @@ function FullPokemon(pokemonPerso, pokemonGeneral) { // Easier to manipulate
   this.item = pokemonPerso.item;
   this.stats = pokemonPerso.stats;
   this.status = pokemonPerso.status;
+  this.species = pokemonPerso.species;
 
   this.types = pokemonGeneral.types;
   this.color = pokemonGeneral.color;

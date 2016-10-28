@@ -44,7 +44,7 @@ Risibot.prototype.firstMessages = function(i) {
 };
 
 Risibot.prototype.choseMove = function() {
-	if (!this.pokemon || !this.ennemy[0])
+	if (!this.pokemon || !this.ennemy)
 		return -1;
 	
   movesInterests = [0, 0, 0, 0];
@@ -208,15 +208,15 @@ Risibot.prototype.getPokemon = function() {
   if (pokemonPerso && pokemonGeneral) {
     this.pokemonParsed = true;
     this.pokemon = new FullPokemon(pokemonPerso, pokemonGeneral);
-    console.log("Risibot: getPokemon: Pokemon parsed.");
+    console.log("Risibot: getPokemon: " + this.pokemon.name + " parsed.");
   }
 };
 
 Risibot.prototype.getEnnemyPokemon = function() {
-  this.ennemy = this.room.battle.yourSide.active;
+  this.ennemy = this.room.battle.yourSide.active[0];
   if (this.ennemy) {
     this.ennemyParsed = true;
-    console.log("Risibot: getPokemon: Ennemy pokemon parsed.");
+    console.log("Risibot: getPokemon: " + this.ennemy.name + " parsed.");
   }
 };
 
@@ -243,7 +243,6 @@ Risibot.prototype.attack = function(id) {
   this.room.chooseMove(id, this.buttonsMoves[k]);
   return true;
 };
-
 Risibot.prototype.routine = function() {
 
   if (this.currentTurn < this.room.battle.turn) {
@@ -252,7 +251,7 @@ Risibot.prototype.routine = function() {
     this.getEnnemyPokemon();
     this.getPokemon();
     this.currentTurn = this.room.battle.turn;
-		//console.log("Maximum damage taken: " + this.AI.getMaxDamageTaken(this.pokemon));
+		console.log("Maximum damage taken: " + this.AI.getMaxDamageTaken(this.pokemon));
   }
 
   if (!this.movesParsed && !this.parsingMoves) {

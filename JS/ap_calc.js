@@ -7,7 +7,7 @@ function getHPDVs(poke) {
 
 function calcStats(poke) {
   for (var i = 0; i < STATS.length; i++) {
-    calcStat(poke, STATS[i]);
+    calcStat(poke, STATS[i]);	
   }
 }
 
