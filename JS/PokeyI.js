@@ -706,4 +706,75 @@ PokeyI.prototype.hasAbility = function(pokemon, ab) {
     }
   }
 	return false;
-}
+};
+
+
+
+//// UNVERIFIED STUFF
+
+
+PokeyI.prototype.getMaxDamageTaken = function(pokemon) { // How much damage can we take at this turn
+	
+	// First we find the closest DC set.
+	
+	var name = checkExeptions(pokemon.species);
+	var currentSet = "";
+	var currentDist = 0;
+	for (var set in setdex[name]) {
+		var pkCal = new PokemonCalc(setdex[name][set]);
+		var d = this.getSetDistance(pokemon, pkCal);
+		if (d < currentDist) {
+			currentDist = d;
+			currentSet = set;
+		}
+		if (!d) // If we find an exact set
+			break;
+	}
+	if (currentSet == "")
+		return -1;
+	
+	var closestPkm = new PokemonCalc(setdex[name][currentSet]);
+	
+	// We look for the maximum amount of damage we can take
+	
+	var maxiDmg = 0;
+	var f = new Field();
+	var ennemyName = checkExeptions(this.bot.ennemy[0].species);
+	for (var set in setdex[ennemyName]) {
+		ennemyPkm = new PokemonCalc(setdex[ennemyName][set]);
+		dmg = calculateAllMoves(p1, p2, f);
+		for (var i = 0; i < dmg.length; i++) {
+			if (dmg[i][15] > maxiDmg) // false if it does not exist
+				maxiDmg = dmg[i][15];
+		}
+	}
+	
+	// Todo : field modificators (rain, sun, ...) + multiplicators
+	
+	return maxDmg;
+	
+};
+
+PokeyI.prototype.getSetDistance = function(pkPerso, pkCal) { // Shows how different two sets are
+	var d = Math.pow(pkPerso.maxhp - pkCal.maxHP, 2);
+	for (stat in pkPerso.stats) {
+		switch (stat) {
+			case 'atk':
+				d += Math.pow(pkPerso.stats.atk - pkCal.rawStats.at, 2);
+				break;
+			case 'def':
+				d += Math.pow(pkPerso.stats.def - pkCal.rawStats.df, 2);
+				break;
+			case 'spa':
+				d += Math.pow(pkPerso.stats.spa - pkCal.rawStats.sa, 2);
+				break;
+			case 'spd':
+				d += Math.pow(pkPerso.stats.spd - pkCal.rawStats.sd, 2);
+				break;
+			case 'spe':
+				d += Math.pow(pkPerso.stats.spe - pkCal.rawStats.sp, 2);
+				break;
+		}
+	}
+	return Math.sqrt(d);
+};

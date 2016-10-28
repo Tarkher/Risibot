@@ -252,6 +252,7 @@ Risibot.prototype.routine = function() {
     this.getEnnemyPokemon();
     this.getPokemon();
     this.currentTurn = this.room.battle.turn;
+		console.log("Maximum damage taken: " + this.AI.getMaxDamageTaken(this.pokemon));
   }
 
   if (!this.movesParsed && !this.parsingMoves) {

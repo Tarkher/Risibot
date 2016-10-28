@@ -1,6 +1,6 @@
 var Moves = moves;
 
-function Pokemon(pokeInfo) {
+function PokemonCalc(pokeInfo) {
     if (typeof pokeInfo === "string") { // in this case, pokeInfo is the id of an individual setOptions value whose moveset's tier matches the selected tier(s)
         this.name = pokeInfo.substring(0, pokeInfo.indexOf(" ("));
         var setName = pokeInfo.substring(pokeInfo.indexOf("(") + 1, pokeInfo.lastIndexOf(")"));

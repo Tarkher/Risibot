@@ -61,3 +61,19 @@ getTop20Walls = function(tier) { // getTop20Walls("UU", "def")
 isAllowedIn = function (pokemon, tier) {
 	return BattleTiers[pokemon.tier] <= BattleTiers[tier];
 }
+
+String.prototype.replaceAt = function(index, character) {
+    return this.substr(0, index) + character + this.substr(index+character.length);
+}
+
+getStatValue = function(stat, nature, base, iv, ev, lvl) {
+	v = iv + 2 * base + Math.floor(ev / 4);
+	v *= lvl / 100 + 5;
+	v = Math.floor(v);
+	if (BattleNatures[nature][plus] == stat)
+		v *= 1.1;
+	else if (BattleNatures[nature][minus] == stat)
+		v *= 0.9;
+	
+	return Math.floor(v);
+}
