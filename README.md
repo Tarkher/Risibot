@@ -23,6 +23,9 @@ Probabilist bot whose the goal is to be able to GRIND THE SHOWDOWN'S LADDER.
 - Balancing move coefs
 - Get Danger function
 - Taking account of expected damage
+- Taunt
+- Fake out
+- Méthode de Jacobi MDR
 
 ...
 
