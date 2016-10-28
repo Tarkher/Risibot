@@ -608,7 +608,7 @@ PokeyI.prototype.getSetDistance = function(pkPerso, pkCal) { // Shows how differ
   return Math.sqrt(d);
 };
 
-/////////////////////// UNSAFE ZONE //////////////////////////////////
+/////////////////////// UNSAFE ZONE ////////////////////////////////////
 
 PokeyI.prototype.isFaster = function(p1, p2) { // NOT TESTED
     s1 = (p1.stats) ? p1.stats.spe : (p1.baseStats) ? p1.baseStats.spe : -1;
