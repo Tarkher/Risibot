@@ -1,4 +1,6 @@
 // input field validation
+
+console.log("a");
 var bounds = {
     "level":[0,100],
     "base":[1,255],
@@ -20,6 +22,8 @@ function attachValidation(clazz, min, max) {
 function validate(obj, min, max) {
     obj.val(Math.max(min, Math.min(max, ~~obj.val())));
 }
+
+console.log("b");
 
 // auto-calc stats and current HP on change
 $(".level").keyup(function() {
@@ -48,6 +52,9 @@ $(".sd .base, .sd .evs, .sd .ivs").bind("keyup change", function() {
 $(".sp .base, .sp .evs, .sp .ivs").bind("keyup change", function() {
     calcStat($(this).closest(".poke-info"), 'sp');
 });
+
+console.log("c");
+
 $(".sl .base").keyup(function() {
     calcStat($(this).closest(".poke-info"), 'sl');
 });
@@ -84,6 +91,8 @@ $(".sl .dvs").keyup(function() {
     calcHP(poke);
 });
 
+console.log("d");
+
 function getHPDVs(poke) {
     return (~~poke.find(".at .dvs").val() % 2) * 8 +
             (~~poke.find(".df .dvs").val() % 2) * 4 +
@@ -117,6 +126,8 @@ $(".percent-hp").keyup(function() {
     var percent = $(this).val();
     calcCurrentHP($(this).parent(), max, percent);
 });
+
+console.log("e");
 
 $(".ability").bind("keyup change", function() {
     $(this).closest(".poke-info").find(".move-hits").val($(this).val() === 'Skill Link' ? 5 : 3);
@@ -175,6 +186,8 @@ $("#p1 .item").bind("keyup change", function() {
     autosetStatus("#p1", $(this).val());
 });
 
+console.log("f");
+
 var lastManualStatus = {"#p1":"Healthy"};
 var lastAutoStatus = {"#p1":"Healthy"};
 function autosetStatus(p, item) {
@@ -223,6 +236,8 @@ $(".move-selector").change(function() {
         moveGroupObj.children(".move-hits").hide();
     }
 });
+
+console.log("g");
 
 // auto-update set details on select
 $(".set-selector").change(function() {
