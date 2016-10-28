@@ -200,119 +200,15 @@ function SideCalc(format, terrain, weather, isGravity, isSR, spikes, isReflect, 
 
 var gen, genWasChanged, notation, pokedex, setdex, typeChart, moves, abilities, items, STATS, calcHP, calcStat;
 
-$(".gen").change(function () {
-    gen = ~~$(this).val();
-    genWasChanged = true;
-    switch (gen) {
-        case 1:
-            pokedex = POKEDEX_RBY;
-            setdex = SETDEX_RBY;
-            typeChart = TYPE_CHART_RBY;
-            moves = MOVES_RBY;
-            items = [];
-            abilities = [];
-            STATS = STATS_RBY;
-            calcHP = CALC_HP_RBY;
-            calcStat = CALC_STAT_RBY;
-            break;
-        case 2:
-            pokedex = POKEDEX_GSC;
-            setdex = SETDEX_GSC;
-            typeChart = TYPE_CHART_GSC;
-            moves = MOVES_GSC;
-            items = ITEMS_GSC;
-            abilities = [];
-            STATS = STATS_GSC;
-            calcHP = CALC_HP_RBY;
-            calcStat = CALC_STAT_RBY;
-            break;
-        case 3:
-            pokedex = POKEDEX_ADV;
-            setdex = SETDEX_ADV;
-            typeChart = TYPE_CHART_GSC;
-            moves = MOVES_ADV;
-            items = ITEMS_ADV;
-            abilities = ABILITIES_ADV;
-            STATS = STATS_GSC;
-            calcHP = CALC_HP_ADV;
-            calcStat = CALC_STAT_ADV;
-            break;
-        case 4:
-            pokedex = POKEDEX_DPP;
-            setdex = SETDEX_DPP;
-            typeChart = TYPE_CHART_GSC;
-            moves = MOVES_DPP;
-            items = ITEMS_DPP;
-            abilities = ABILITIES_DPP;
-            STATS = STATS_GSC;
-            calcHP = CALC_HP_ADV;
-            calcStat = CALC_STAT_ADV;
-            break;
-        case 5:
-            pokedex = POKEDEX_BW;
-            setdex = SETDEX_BW;
-            typeChart = TYPE_CHART_GSC;
-            moves = MOVES_BW;
-            items = ITEMS_BW;
-            abilities = ABILITIES_BW;
-            STATS = STATS_GSC;
-            calcHP = CALC_HP_ADV;
-            calcStat = CALC_STAT_ADV;
-            break;
-        default:
-            pokedex = POKEDEX_XY;
-            setdex = SETDEX_XY;
-            typeChart = TYPE_CHART_XY;
-            moves = MOVES_XY;
-            items = ITEMS_XY;
-            abilities = ABILITIES_XY;
-            STATS = STATS_GSC;
-            calcHP = CALC_HP_ADV;
-            calcStat = CALC_STAT_ADV;
-    }
-    clearField();
-    $(".gen-specific.g" + gen).show();
-    $(".gen-specific").not(".g" + gen).hide();
-    var typeOptions = getSelectOptions(Object.keys(typeChart));
-    $("select.type1, select.move-type").find("option").remove().end().append(typeOptions);
-    $("select.type2").find("option").remove().end().append("<option value=\"\">(none)</option>" + typeOptions);
-    var moveOptions = getSelectOptions(Object.keys(moves), true);
-    $("select.move-selector").find("option").remove().end().append(moveOptions);
-    var abilityOptions = getSelectOptions(abilities, true);
-    $("select.ability").find("option").remove().end().append("<option value=\"\">(other)</option>" + abilityOptions);
-    var itemOptions = getSelectOptions(items, true);
-    $("select.item").find("option").remove().end().append("<option value=\"\">(none)</option>" + itemOptions);
-    
-    $(".set-selector").val(getSetOptions()[gen < 4 ? 3 : 1].id);
-    $(".set-selector").change();
-});
-
-$(".notation").change(function () {
-    notation = $(this).val();
-});
-
-function clearField() {
-    $("#singles-format").prop("checked", true);
-    $("#clear").prop("checked", true);
-    $("#gscClear").prop("checked", true);
-    $("#gravity").prop("checked", false);
-    $("#srL").prop("checked", false);
-    $("#srR").prop("checked", false);
-    $("#spikesL0").prop("checked", true);
-    $("#spikesR0").prop("checked", true);
-    $("#gscSpikesL").prop("checked", false);
-    $("#gscSpikesR").prop("checked", false);
-    $("#reflectL").prop("checked", false);
-    $("#reflectR").prop("checked", false);
-    $("#lightScreenL").prop("checked", false);
-    $("#lightScreenR").prop("checked", false);
-    $("#foresightL").prop("checked", false);
-    $("#foresightR").prop("checked", false);
-    $("#helpingHandL").prop("checked", false);
-    $("#helpingHandR").prop("checked", false);
-    $("#friendGuardL").prop("checked", false);
-    $("#friendGuardR").prop("checked", false);
-}
+pokedex = POKEDEX_XY;
+setdex = SETDEX_XY;
+typeChart = TYPE_CHART_XY;
+moves = MOVES_XY;
+items = ITEMS_XY;
+abilities = ABILITIES_XY;
+STATS = STATS_GSC;
+calcHP = CALC_HP_ADV;
+calcStat = CALC_STAT_ADV;
 
 function getSetOptions() {
     var pokeNames = Object.keys(pokedex);
