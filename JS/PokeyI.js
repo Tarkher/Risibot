@@ -33,11 +33,11 @@ PokeyI.prototype.getBulk = function(pokemon) {
 
 PokeyI.prototype.getDanger = function(attacker, defender) {
 
-	if (!attacker || !defender)
-		return 0;
-	
+  if (!attacker || !defender)
+    return 0;
+
   var atkType; // We first try to determine what kind of attacker ennemy is.
-  atkType = (this.getStat(attacker, 'atk') >= this.getStat(attacker, 'spa')) ? 'atk': 'spa';
+  atkType = (this.getStat(attacker, 'atk') >= this.getStat(attacker, 'spa')) ? 'atk' : 'spa';
 
   var potentialO = (this.getStat(attacker, 'spe') / 2 / (attacker.status == 'par' ? 4 : 1) + // We calculate an offensive power
     this.getStat(attacker, atkType) / 2 / ((attacker.status == 'brn' && atkType == 'atk') ? 2 : 1));
@@ -55,9 +55,9 @@ PokeyI.prototype.getDanger = function(attacker, defender) {
 
   var potentialD = (this.getStat(defender, 'hp') / 1.5 + // We calculate a defensive power
     ((atkType == 'atk') ? this.getStat(defender, 'def') : this.getStat(defender, 'spd')) / 2);
-	
-	console.log("PokeyI: getDanger: Ennemy power : " + potentialO);
-	console.log("PokeyI: getDanger: Ally power : " + potentialD);
+
+  console.log("PokeyI: getDanger: Ennemy power : " + potentialO);
+  console.log("PokeyI: getDanger: Ally power : " + potentialD);
 
   return potentialO / potentialD;
 };
@@ -199,72 +199,72 @@ PokeyI.prototype.distance = function(a, b) {
 
 PokeyI.prototype.getPotentialWall = function(pokemon) { // Can pokemon be a good wall ?
 
-	//// STATS 1 - 16
-	
-	var def = this.getStat(pokemon, 'def');
-	var spd = this.getStat(pokemon, 'spd');
-	var hp = this.getStat(pokemon, 'hp');
-	
-	mini = ( (this.canBurn(pokemon)) ? spd : Math.min(def, spd) );
+  //// STATS 1 - 16
+
+  var def = this.getStat(pokemon, 'def');
+  var spd = this.getStat(pokemon, 'spd');
+  var hp = this.getStat(pokemon, 'hp');
+
+  mini = ((this.canBurn(pokemon)) ? spd : Math.min(def, spd));
   var coefD = (mini <= 60) ? 1 : (mini <= 80) ? 2 : (mini <= 100) ? 3 : 4;
-	var coefH = (hp <= 60) ? 1 : (hp <= 80) ? 2 : (hp <= 100) ? 3 : 4;
-	
-	var coefStats = coefD * coefH; // => stats predispositions 1 - 16
-	
-	//// Weaknesses 1 - 8
-	
-	var coefWeak = parseInt((this.weaknessToInt(pokemon) + 15.5) / 30 * 8) + 1;
-	
-	//// Bonus points 
-	
+  var coefH = (hp <= 60) ? 1 : (hp <= 80) ? 2 : (hp <= 100) ? 3 : 4;
+
+  var coefStats = coefD * coefH; // => stats predispositions 1 - 16
+
+  //// Weaknesses 1 - 8
+
+  var coefWeak = parseInt((this.weaknessToInt(pokemon) + 15.5) / 30 * 8) + 1;
+
+  //// Bonus points 
+
   var coefMoves = 1.0;
-	coefMoves += this.canHeal(pokemon); // Increases greatly the staying power
+  coefMoves += this.canHeal(pokemon); // Increases greatly the staying power
   if (this.canCure(pokemon)) // Not as important, but cool.
     coefMoves += 0.5;
-	if (this.hasAbility(pokemon, "Prankster")) // A major stalling talent
-		coefMoves += 8;	
-	if (this.hasAbility(pokemon, "Gale Wings")) // Priority roost
-		coefMoves += 4;
-	if (this.hasAbility(pokemon, "Poison Heal")) //Is it necessary to tell something ?
-		coefMoves += 8;
-	if (this.hasAbility(pokemon, "Magic Bounce")) // A major stalling talent
-		coefMoves += 5;
-	if (this.canSetupDef(pokemon, (def > spd) ? 'spd' : 'def')) // A great advantage
-		coefMoves += 2;
-  
-	coefMoves += this.passiveHeal(pokemon); // Leech seed / ingrain ... / POISON HEAL !!
+  if (this.hasAbility(pokemon, "Prankster")) // A major stalling talent
+    coefMoves += 8;
+  if (this.hasAbility(pokemon, "Gale Wings")) // Priority roost
+    coefMoves += 4;
+  if (this.hasAbility(pokemon, "Poison Heal")) //Is it necessary to tell something ?
+    coefMoves += 8;
+  if (this.hasAbility(pokemon, "Magic Bounce")) // A major stalling talent
+    coefMoves += 5;
+  if (this.canSetupDef(pokemon, (def > spd) ? 'spd' : 'def')) // A great advantage
+    coefMoves += 2;
 
-	// Crocune-like
-	
-	if (mini > 100 && hp >= 100 && this.canBurn(pokemon) && this.canSetupDef(pokemon, 'spd'))
-		coefMoves += 3;
-	else if (!this.canHeal(pokemon))
-		return 0;
-	
-	return coefStats + coefWeak + parseInt(coefMoves);	
+  coefMoves += this.passiveHeal(pokemon); // Leech seed / ingrain ... / POISON HEAL !!
+
+  // Crocune-like
+
+  if (mini > 100 && hp >= 100 && this.canBurn(pokemon) && this.canSetupDef(pokemon, 'spd'))
+    coefMoves += 3;
+  else if (!this.canHeal(pokemon))
+    return 0;
+
+  return coefStats + coefWeak + parseInt(coefMoves);
 };
 
 PokeyI.prototype.weaknessToInt = function(pokemon) { // average : 0.58
-	var types = this.getWeaknesses(pokemon);
-	var typeDef = 0;
-	for (w in types) {
-		if (w == 'powder')
-			return typeDef;
-		var coef = ( (types[w] == 0) ? 4.0 : (types[w] == 0.25) ? 2.0 : (types[w] == 0.5) ? 1.0 : (types[w] == 2) ? -2 : (types[w] == 4) ? -4 : 0.0 );
-		typeDef += coef * ((w == "Fighting" || w == "Water" || w == "Ground" || w == "Fire" || w == "Dark" || w == "Electric" || w == "Ice" || w == "Fly") ? 1.5 : 1.0);
-	}	
+  var types = this.getWeaknesses(pokemon);
+  var typeDef = 0;
+  for (w in types) {
+    if (w == 'powder')
+      return typeDef;
+    var coef = ((types[w] == 0) ? 4.0 : (types[w] == 0.25) ? 2.0 : (types[w] == 0.5) ? 1.0 : (types[w] == 2) ? -2 : (types[w] == 4) ? -4 : 0.0);
+    typeDef += coef * ((w == "Fighting" || w == "Water" || w == "Ground" || w == "Fire" || w == "Dark" || w == "Electric" || w == "Ice" || w == "Fly") ? 1.5 : 1.0);
+  }
 }
 
 PokeyI.prototype.canHeal = function(pokemon) { // If pokemon can learn viable heal moves
 
   var name = pokemon.species.toLowerCase();
-	if (pokemon.baseSpecies)
-		name = pokemon.baseSpecies.toLowerCase();
-		
-	if (!BattleLearnsets[name])
-		return false;
-	
-	var healMax = 0;
+  if (pokemon.baseSpecies)
+    name = pokemon.baseSpecies.toLowerCase();
+
+  if (!BattleLearnsets[name])
+    return false;
+
+  var healMax = 0;
   for (var move in BattleLearnsets[name].learnset) {
     switch (move) {
       case 'roost':
@@ -276,11 +276,11 @@ PokeyI.prototype.canHeal = function(pokemon) { // If pokemon can learn viable he
       case 'morningsun':
       case 'moonlight':
       case 'healorder':
-        return 2;				
+        return 2;
       case 'wish':
-				healMax = 1.5;
-			case 'painsplit':
-				healMax = 1;
+        healMax = 1.5;
+      case 'painsplit':
+        healMax = 1;
     }
   }
   return healMax;
@@ -289,13 +289,13 @@ PokeyI.prototype.canHeal = function(pokemon) { // If pokemon can learn viable he
 PokeyI.prototype.canBurn = function(pokemon) { // If pokemon can learn viable heal moves
 
   var name = pokemon.species.toLowerCase();
-	if (pokemon.baseSpecies)
-		name = pokemon.baseSpecies.toLowerCase();
-		
-	if (!BattleLearnsets[name])
-		return false;
-	
-	var healMax = 0;
+  if (pokemon.baseSpecies)
+    name = pokemon.baseSpecies.toLowerCase();
+
+  if (!BattleLearnsets[name])
+    return false;
+
+  var healMax = 0;
   for (var move in BattleLearnsets[name].learnset) {
     switch (move) {
       case 'sacredfire':
@@ -305,7 +305,7 @@ PokeyI.prototype.canBurn = function(pokemon) { // If pokemon can learn viable he
       case 'iceburn':
       case 'inferno':
       case 'lavaplume':
-				return true;
+        return true;
     }
   }
   return false;
@@ -314,12 +314,12 @@ PokeyI.prototype.canBurn = function(pokemon) { // If pokemon can learn viable he
 PokeyI.prototype.canCure = function(pokemon) { // If pokemon can learn viable heal moves
 
   var name = pokemon.species.toLowerCase();
-	if (pokemon.baseSpecies)
-		name = pokemon.baseSpecies.toLowerCase();
-	
-	if (!BattleLearnsets[name])
-		return false;
-	
+  if (pokemon.baseSpecies)
+    name = pokemon.baseSpecies.toLowerCase();
+
+  if (!BattleLearnsets[name])
+    return false;
+
   for (var move in BattleLearnsets[name].learnset) {
     switch (move) {
       case 'healbell':
@@ -332,14 +332,14 @@ PokeyI.prototype.canCure = function(pokemon) { // If pokemon can learn viable he
 
 PokeyI.prototype.passiveHeal = function(pokemon) { // If pokemon can learn viable heal moves
   var coef = 1.0;
-	
+
   var name = pokemon.species.toLowerCase();
-	if (pokemon.baseSpecies)
-		name = pokemon.baseSpecies.toLowerCase();
-	
-	if (!BattleLearnsets[name])
-		return false;
-	
+  if (pokemon.baseSpecies)
+    name = pokemon.baseSpecies.toLowerCase();
+
+  if (!BattleLearnsets[name])
+    return false;
+
   for (var move in BattleLearnsets[name].learnset) {
     switch (move) {
       case 'aquaring':
@@ -354,50 +354,50 @@ PokeyI.prototype.passiveHeal = function(pokemon) { // If pokemon can learn viabl
 PokeyI.prototype.canSetupDef = function(pokemon, type) { // If pokemon can learn viable heal moves
 
   var name = pokemon.species.toLowerCase();
-	if (pokemon.baseSpecies)
-		name = pokemon.baseSpecies.toLowerCase();
-	
-	if (!BattleLearnsets[name])
-		return false;
-	
+  if (pokemon.baseSpecies)
+    name = pokemon.baseSpecies.toLowerCase();
+
+  if (!BattleLearnsets[name])
+    return false;
+
   for (var move in BattleLearnsets[name].learnset) {
     switch (move) {
       case 'cottonguard':
-				if (type == 'def')
-					return true;
-				break;
-			case 'bulkup':
-				if (type == 'def')
-					return true;
-				break;
-			case 'irondefense':
-				if (type == 'def')
-					return true;
-				break;
-			case 'curse':
-				if (type == 'def')
-					return true;
-				break;
-			case 'coil':
-				if (type == 'def')
-					return true;
-				break;
-			case 'barrier':
-				if (type == 'def')
-					return true;
-				break;
-			case 'calmmind':
-				if (type == 'spd')
-					return true;
-				break;
-			case 'acidarmor':
-				if (type == 'spd')
-					return true;
-				break;
-			case 'cosmicpower':
-				return true;
-			case 'stockpile':
-				return true;
+        if (type == 'def')
+          return true;
+        break;
+      case 'bulkup':
+        if (type == 'def')
+          return true;
+        break;
+      case 'irondefense':
+        if (type == 'def')
+          return true;
+        break;
+      case 'curse':
+        if (type == 'def')
+          return true;
+        break;
+      case 'coil':
+        if (type == 'def')
+          return true;
+        break;
+      case 'barrier':
+        if (type == 'def')
+          return true;
+        break;
+      case 'calmmind':
+        if (type == 'spd')
+          return true;
+        break;
+      case 'acidarmor':
+        if (type == 'spd')
+          return true;
+        break;
+      case 'cosmicpower':
+        return true;
+      case 'stockpile':
+        return true;
     }
   }
   return false;
@@ -489,94 +489,94 @@ PokeyI.prototype.getStat = function(pokemon, stat) {
 };
 
 PokeyI.prototype.hasAbility = function(pokemon, ab) {
-	var name = pokemon.species.toLowerCase();
-	if (pokemon.baseSpecies)
-		name = pokemon.baseSpecies.toLowerCase();
-	
-	if (!BattlePokedex[name])
-		return false
-	
-	for (var a in BattlePokedex[name].abilities) {
+  var name = pokemon.species.toLowerCase();
+  if (pokemon.baseSpecies)
+    name = pokemon.baseSpecies.toLowerCase();
+
+  if (!BattlePokedex[name])
+    return false
+
+  for (var a in BattlePokedex[name].abilities) {
     switch (BattlePokedex[name].abilities[a]) {
       case ab:
         return true;
     }
   }
-	return false;
+  return false;
 };
 
 PokeyI.prototype.getMaxDamageTaken = function(pokemon) { // How much damage can we take at this turn
-	
-	// First we find the closest DC set.
-    
-    var name = checkExeptions(pokemon.species);
-    var setName;
-    for (setName in setdex[name])
-        if (setName)
-            break;
-	
-    setName = name + " (" + setName + ")";
-	var closestPkm = new PokemonCalc(setName);
-    if (!closestPkm)
-        return [-1, -1];
-    
-    closestPkm.maxHP = pokemon.maxhp;
-    closestPkm.curHP = pokemon.hp;
-    closestPkm.rawStats.at = pokemon.stats.atk;
-    closestPkm.rawStats.df = pokemon.stats.def;
-    closestPkm.rawStats.sa = pokemon.stats.spa;
-    closestPkm.rawStats.sd = pokemon.stats.spd;
-    closestPkm.rawStats.sp = pokemon.stats.spe;
-    
-    for (var i = 0; i < pokemon.moves.length; i++) {
-        closestPkm.moves[i] = Moves[BattleMovedex[pokemon.moves[i]].name];
+
+  // First we find the closest DC set.
+
+  var name = checkExeptions(pokemon.species);
+  var setName;
+  for (setName in setdex[name])
+    if (setName)
+      break;
+
+  setName = name + " (" + setName + ")";
+  var closestPkm = new PokemonCalc(setName);
+  if (!closestPkm)
+    return [-1, -1];
+
+  closestPkm.maxHP = pokemon.maxhp;
+  closestPkm.curHP = pokemon.hp;
+  closestPkm.rawStats.at = pokemon.stats.atk;
+  closestPkm.rawStats.df = pokemon.stats.def;
+  closestPkm.rawStats.sa = pokemon.stats.spa;
+  closestPkm.rawStats.sd = pokemon.stats.spd;
+  closestPkm.rawStats.sp = pokemon.stats.spe;
+
+  for (var i = 0; i < pokemon.moves.length; i++) {
+    closestPkm.moves[i] = Moves[BattleMovedex[pokemon.moves[i]].name];
+  }
+
+  // We look for the maximum amount of damage we can take
+
+  var maxiDmg = [0, 0];
+  var f = new Field();
+  var ennemyName = checkExeptions(this.bot.ennemy.species);
+  for (var set in setdex[ennemyName]) {
+    setName = ennemyName + " (" + set + ")";
+    var ennemyPkm = new PokemonCalc(setName);
+    dmg = calculateAllMoves(ennemyPkm, closestPkm, f);
+    for (var i = 0; i < dmg[0].length; i++) {
+      if (dmg[0][i].damage[15] > maxiDmg[0]) // false if it does not exist
+        maxiDmg[0] = dmg[0][i].damage[15];
     }
-	
-	// We look for the maximum amount of damage we can take
-	
-	var maxiDmg = [0, 0];
-	var f = new Field();
-	var ennemyName = checkExeptions(this.bot.ennemy.species);
-	for (var set in setdex[ennemyName]) {
-        setName = ennemyName + " (" + set + ")";
-        var ennemyPkm = new PokemonCalc(setName);
-		dmg = calculateAllMoves(ennemyPkm, closestPkm, f);
-		for (var i = 0; i < dmg[0].length; i++) {
-			if (dmg[0][i].damage[15] > maxiDmg[0]) // false if it does not exist
-				maxiDmg[0] = dmg[0][i].damage[15];
-		}
-        for (var i = 0; i < dmg[1].length; i++) {
-			if (dmg[1][i].damage[15] > maxiDmg[1]) // false if it does not exist
-				maxiDmg[1] = dmg[1][i].damage[15];
-		}
-	}
-	
-	// Todo : field modificators (rain, sun, ...) + multiplicators
-	
-	return maxiDmg;
-	
+    for (var i = 0; i < dmg[1].length; i++) {
+      if (dmg[1][i].damage[15] > maxiDmg[1]) // false if it does not exist
+        maxiDmg[1] = dmg[1][i].damage[15];
+    }
+  }
+
+  // Todo : field modificators (rain, sun, ...) + multiplicators
+
+  return maxiDmg;
+
 };
 
 PokeyI.prototype.getSetDistance = function(pkPerso, pkCal) { // Shows how different two sets are
-	var d = Math.pow(pkPerso.maxhp - pkCal.maxHP, 2);
-	for (stat in pkPerso.stats) {
-		switch (stat) {
-			case 'atk':
-				d += Math.pow(pkPerso.stats.atk - pkCal.rawStats.at, 2);
-				break;
-			case 'def':
-				d += Math.pow(pkPerso.stats.def - pkCal.rawStats.df, 2);
-				break;
-			case 'spa':
-				d += Math.pow(pkPerso.stats.spa - pkCal.rawStats.sa, 2);
-				break;
-			case 'spd':
-				d += Math.pow(pkPerso.stats.spd - pkCal.rawStats.sd, 2);
-				break;
-			case 'spe':
-				d += Math.pow(pkPerso.stats.spe - pkCal.rawStats.sp, 2);
-				break;
-		}
-	}
-	return Math.sqrt(d);
+  var d = Math.pow(pkPerso.maxhp - pkCal.maxHP, 2);
+  for (stat in pkPerso.stats) {
+    switch (stat) {
+      case 'atk':
+        d += Math.pow(pkPerso.stats.atk - pkCal.rawStats.at, 2);
+        break;
+      case 'def':
+        d += Math.pow(pkPerso.stats.def - pkCal.rawStats.df, 2);
+        break;
+      case 'spa':
+        d += Math.pow(pkPerso.stats.spa - pkCal.rawStats.sa, 2);
+        break;
+      case 'spd':
+        d += Math.pow(pkPerso.stats.spd - pkCal.rawStats.sd, 2);
+        break;
+      case 'spe':
+        d += Math.pow(pkPerso.stats.spe - pkCal.rawStats.sp, 2);
+        break;
+    }
+  }
+  return Math.sqrt(d);
 };
