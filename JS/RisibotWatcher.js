@@ -18,10 +18,10 @@ RisibotWatcher = function() { // Allows to manage Risibot from the tchat
 					this.risibot.stopSignal = true;
 					this.risibot = undefined;
 					break;
-				case "Risibot.toString()":
+				case "Risibot.toString()": // Not implemented
 					this.console.log(this.risibot.toString());
 					break;
-				case "Risibot.get()":
+				case "Risibot.get()": 
 					this.console.log(this.risibot);
 					break;
 			}

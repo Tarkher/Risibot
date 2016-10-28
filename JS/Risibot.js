@@ -1,4 +1,4 @@
-VER = "0.3";
+VER = "0.4";
 
 function Risibot() {
 
@@ -19,6 +19,7 @@ function Risibot() {
   this.havePlayed = false;
 
   this.AI = new PokeyI(this);
+	this.stopSignal = false;
 
   this.firstMessages(0);
 };
@@ -224,7 +225,10 @@ Risibot.prototype.routine = function() {
       placeholder = 1;
     }
   }
-
+	
+	if (this.stopSignal)
+		return;
+	
   that = this;
   setTimeout(function() {
     that.routine();
