@@ -273,7 +273,7 @@ $(".set-selector").change(function() {
             pokeObj.find(".hp .ivs").val(31);
             pokeObj.find(".hp .dvs").val(15);
             for (i = 0; i < STATS.length; i++) {
-                pokeObj.find("." + STATS[i] + " .evs").val(0);
+                pokeObj.find("." + STATS[i] + " .evs").val(0);							
                 pokeObj.find("." + STATS[i] + " .ivs").val(31);
                 pokeObj.find("." + STATS[i] + " .dvs").val(15);
             }
@@ -433,11 +433,11 @@ function Field() {
         weather = "";
     };
     this.getSide = function(i) {
-        return new Side(format, terrain, weather, isGravity, isSR[i], spikes[i], isReflect[i], isLightScreen[i], isForesight[i], isHelpingHand[i], isFriendGuard[i]);
+        return new SideCalc(format, terrain, weather, isGravity, isSR[i], spikes[i], isReflect[i], isLightScreen[i], isForesight[i], isHelpingHand[i], isFriendGuard[i]);
     };
 }
 
-function Side(format, terrain, weather, isGravity, isSR, spikes, isReflect, isLightScreen, isForesight, isHelpingHand, isFriendGuard) {
+function SideCalc(format, terrain, weather, isGravity, isSR, spikes, isReflect, isLightScreen, isForesight, isHelpingHand, isFriendGuard) {
     this.format = format;
     this.terrain = terrain;
     this.weather = weather;

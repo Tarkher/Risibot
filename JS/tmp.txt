@@ -1,0 +1,27 @@
+
+// @require      https://pokemonshowdown.com/damagecalc/js/data/pokedex.js
+// @require      https://pokemonshowdown.com/damagecalc/js/data/setdex_xy.js
+// @require      https://pokemonshowdown.com/damagecalc/js/data/setdex_bw.js
+// @require      https://pokemonshowdown.com/damagecalc/js/data/setdex_dpp.js
+// @require      https://pokemonshowdown.com/damagecalc/js/data/setdex_rse.js
+// @require      https://pokemonshowdown.com/damagecalc/js/data/setdex_gsc.js
+// @require      https://pokemonshowdown.com/damagecalc/js/data/setdex_rby.js
+// @require      https://pokemonshowdown.com/damagecalc/js/data/stat_data.js
+// @require      https://pokemonshowdown.com/damagecalc/js/data/type_data.js
+// @require      https://pokemonshowdown.com/damagecalc/js/data/nature_data.js
+// @require      https://pokemonshowdown.com/damagecalc/js/data/ability_data.js
+// @require      https://pokemonshowdown.com/damagecalc/js/data/item_data.js
+// @require      https://pokemonshowdown.com/damagecalc/js/data/move_data.js
+// @require      https://raw.githubusercontent.com/Risitop/Risibot/master/JS/ap_calc.js
+// @require      https://raw.githubusercontent.com/Risitop/Risibot/master/JS/calc_ab.js
+// @require      https://pokemonshowdown.com/damagecalc/js/damage.js
+// @require      https://pokemonshowdown.com/damagecalc/js/damage_dpp.js
+// @require      https://pokemonshowdown.com/damagecalc/js/damage_rse.js
+// @require      https://pokemonshowdown.com/damagecalc/js/damage_gsc.js
+// @require      https://pokemonshowdown.com/damagecalc/js/damage_rby.js
+// @require      https://pokemonshowdown.com/damagecalc/js/ko_chance.js
+// @require      https://pokemonshowdown.com/damagecalc/js/moveset_import.js
+
+...
+
+// @require      https://raw.githubusercontent.com/Risitop/Risibot/master/JS/ap_calc_fix.js
