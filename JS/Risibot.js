@@ -41,6 +41,7 @@ Risibot.prototype.firstMessages = function(i) {
 			return;
 	}
 	that = this;
+	console.log(this);
 	setTimeout( function() { that.firstMessages(i + 1); }, 1000 );
 };
 

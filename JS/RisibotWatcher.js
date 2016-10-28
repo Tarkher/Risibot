@@ -2,11 +2,11 @@ RisibotWatcher = function() { // Allows to manage Risibot from the tchat
 	
 	this.risibot = undefined;
 	
-	console.log("RisibotWatcher: intitializing...")
+	console.log("RisibotWatcher: intitializing...");
 	
 	this.routine = function() {
 		
-		if (room) {
+		if (room && room.chatHistory) {
 			switch (room.chatHistory.lines[room.chatHistory.lines.length - 1]) {
 				case "La chancla !":
 					if (!this.risibot) {
@@ -18,9 +18,6 @@ RisibotWatcher = function() { // Allows to manage Risibot from the tchat
 					this.risibot.stopSignal = true;
 					this.risibot = undefined;
 					break;
-				case "Risibot.toString()": // Not implemented
-					this.console.log(this.risibot.toString());
-					break;
 				case "Risibot.get()": 
 					this.console.log(this.risibot);
 					break;
@@ -29,9 +26,8 @@ RisibotWatcher = function() { // Allows to manage Risibot from the tchat
 		
 		that = this;
 		setTimeout(function() { that.routine(); }, 500);
-	}
-	
-	this.routine();
+	};
 };
 
-new RisibotWatcher();
+watcher = new RisibotWatcher();
+watcherroutine();
