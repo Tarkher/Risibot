@@ -124,7 +124,7 @@ PokeyI.prototype.evalStatus = function(move) { // Is this status move worth it ?
 PokeyI.prototype.evalSpin = function(move) { // Is this spin worth it ?
 
   if ( (jQuery.isEmptyObject(this.bot.room.battle.mySide.sideConditions) && !this.bot.pokemon.volatiles.leechseed) || 
-			this.hasType(this.bot.ennemy, "Ghost") {
+			this.hasType(this.bot.ennemy, "Ghost") ) {
     return 0;
   }
   return 150;
