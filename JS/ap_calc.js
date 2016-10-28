@@ -1,6 +1,5 @@
 // input field validation
 
-console.log("a");
 var bounds = {
     "level":[0,100],
     "base":[1,255],
@@ -22,8 +21,6 @@ function attachValidation(clazz, min, max) {
 function validate(obj, min, max) {
     obj.val(Math.max(min, Math.min(max, ~~obj.val())));
 }
-
-console.log("b");
 
 // auto-calc stats and current HP on change
 $(".level").keyup(function() {
@@ -52,8 +49,6 @@ $(".sd .base, .sd .evs, .sd .ivs").bind("keyup change", function() {
 $(".sp .base, .sp .evs, .sp .ivs").bind("keyup change", function() {
     calcStat($(this).closest(".poke-info"), 'sp');
 });
-
-console.log("c");
 
 $(".sl .base").keyup(function() {
     calcStat($(this).closest(".poke-info"), 'sl');
@@ -91,8 +86,6 @@ $(".sl .dvs").keyup(function() {
     calcHP(poke);
 });
 
-console.log("d");
-
 function getHPDVs(poke) {
     return (~~poke.find(".at .dvs").val() % 2) * 8 +
             (~~poke.find(".df .dvs").val() % 2) * 4 +
@@ -126,8 +119,6 @@ $(".percent-hp").keyup(function() {
     var percent = $(this).val();
     calcCurrentHP($(this).parent(), max, percent);
 });
-
-console.log("e");
 
 $(".ability").bind("keyup change", function() {
     $(this).closest(".poke-info").find(".move-hits").val($(this).val() === 'Skill Link' ? 5 : 3);
@@ -186,8 +177,6 @@ $("#p1 .item").bind("keyup change", function() {
     autosetStatus("#p1", $(this).val());
 });
 
-console.log("f");
-
 var lastManualStatus = {"#p1":"Healthy"};
 var lastAutoStatus = {"#p1":"Healthy"};
 function autosetStatus(p, item) {
@@ -236,8 +225,6 @@ $(".move-selector").change(function() {
         moveGroupObj.children(".move-hits").hide();
     }
 });
-
-console.log("g");
 
 // auto-update set details on select
 $(".set-selector").change(function() {
@@ -311,8 +298,6 @@ $(".set-selector").change(function() {
 function setSelectValueIfValid(select, value, fallback) {
     select.val(select.children("option[value='" + value + "']").length !== 0 ? value : fallback);
 }
-
-console.log("h");
 
 function PokemonCalc(pokeInfo) {
     if (typeof pokeInfo === "string") { // in this case, pokeInfo is the id of an individual setOptions value whose moveset's tier matches the selected tier(s)
@@ -410,8 +395,6 @@ function PokemonCalc(pokeInfo) {
     }
 }
 
-console.log("i");
-
 function getMoveDetails(moveInfo) {
     var moveName = moveInfo.find("select.move-selector").val();
     var defaultDetails = moves[moveName];
@@ -456,8 +439,6 @@ function Field() {
     };
 }
 
-console.log("j");
-
 function SideCalc(format, terrain, weather, isGravity, isSR, spikes, isReflect, isLightScreen, isForesight, isHelpingHand, isFriendGuard) {
     this.format = format;
     this.terrain = terrain;
@@ -473,8 +454,6 @@ function SideCalc(format, terrain, weather, isGravity, isSR, spikes, isReflect, 
 }
 
 var gen, genWasChanged, notation, pokedex, setdex, typeChart, moves, abilities, items, STATS, calcHP, calcStat;
-
-console.log("k");
 
 $(".gen").change(function () {
     gen = ~~$(this).val();
@@ -567,8 +546,6 @@ $(".notation").change(function () {
     notation = $(this).val();
 });
 
-console.log("l");
-
 function clearField() {
     $("#singles-format").prop("checked", true);
     $("#clear").prop("checked", true);
@@ -635,45 +612,3 @@ function getSelectOptions(arr, sort) {
     }
     return r;
 }
-
-console.log("m");
-
-$(document).ready(function() {
-    $("#gen6").prop("checked", true);
-    $("#gen6").change();
-    $("#percentage").prop("checked", true);
-    $("#percentage").change();
-
-    $(".set-selector").select2({
-        formatResult: function(object) {
-            return object.set ? ("&nbsp;&nbsp;&nbsp;" + object.set) : ("<b>" + object.text + "</b>");
-        },
-        query: function(query) {
-            var pageSize = 30;
-            var results = _.filter(getSetOptions(), function(option) {
-                var pokeName = option.pokemon.toUpperCase();
-                // 2nd condition is for Megas; remove when Megas are merged
-                return !query.term || pokeName.indexOf(query.term.toUpperCase()) === 0 || pokeName.indexOf(" " + query.term.toUpperCase()) >= 0;
-            });
-            query.callback({
-                results: results.slice((query.page - 1) * pageSize, query.page * pageSize),
-                more: results.length >= query.page * pageSize
-            });
-        },
-        initSelection: function(element, callback) {
-            var data = getSetOptions()[gen < 4 ? 3 : 1];
-            callback(data);
-        }
-    });
-    $(".move-selector").select2({
-        dropdownAutoWidth:true,
-        matcher: function(term, text) {
-            // 2nd condition is for Hidden Power
-            return text.toUpperCase().indexOf(term.toUpperCase()) === 0 || text.toUpperCase().indexOf(" " + term.toUpperCase()) >= 0;
-        }
-    });
-    $(".set-selector").val(getSetOptions()[gen < 4 ? 3 : 1].id);
-    $(".set-selector").change();
-});
-
-console.log("n");
