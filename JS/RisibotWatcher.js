@@ -19,7 +19,7 @@ RisibotWatcher = function() { // Allows to manage Risibot from the tchat
 					this.risibot = undefined;
 					break;
 				case "Risibot.get()": 
-					this.console.log(this.risibot);
+					console.log(this.risibot);
 					break;
 			}
 		}
