@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Risibot
 // @namespace    http://tampermonkey.net/
-// @version      0.4
+// @version      0.1
 // @description  try to take over the world!
 // @author       Risitop
 // @match        http://play.pokemonshowdown.com/*
@@ -37,6 +37,8 @@
 // @require      https://raw.githubusercontent.com/Risitop/Risibot/master/JS/Risibot.js
 // @require      https://raw.githubusercontent.com/Risitop/Risibot/master/JS/moveEvaluations.js
 // @require      https://raw.githubusercontent.com/Risitop/Risibot/master/JS/RisibotWatcher.js
+// @require      https://raw.githubusercontent.com/Risitop/Risibot/master/JS/DamageCalculator.js
+// @require      https://raw.githubusercontent.com/Risitop/Risibot/master/JS/EnnemyPokemon.js
 // @grant        none
 // ==/UserScript==
 ///////////////////////////////////////////////////////////////////////////////

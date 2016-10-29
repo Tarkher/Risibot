@@ -174,7 +174,7 @@ Risibot.prototype.getPokemon = function() {
 };
 
 Risibot.prototype.getEnnemyPokemon = function() {
-  this.ennemy = this.room.battle.yourSide.active[0];
+  this.ennemy = new EnnemyPokemon(this.room.battle.yourSide.active[0]);
   if (this.ennemy) {
     this.ennemyParsed = true;
     console.log("Risibot: getPokemon: Ennemy " + this.ennemy.name + " parsed.");

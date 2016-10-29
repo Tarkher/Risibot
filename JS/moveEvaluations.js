@@ -1,8 +1,8 @@
 Risibot.prototype.choseMove = function() {
     if (!this.pokemon || !this.ennemy)
         return -1;
-    
-  movesInterests = this.AI.getMaxDamageTaken(this.pokemon, this.ennemy).slice(-1);
+  var movesInterests = this.AI.getMaxDamageTaken(this.pokemon, this.ennemy);
+  movesInterests = movesInterests.slice(0,4);
   for (var moveType in this.moves) {
     for (var j = 0; j < this.moves[moveType].length; j++) {
       move = this.moves[moveType][j][0];
