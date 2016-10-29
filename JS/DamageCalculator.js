@@ -45,7 +45,7 @@ PokeyI.prototype.getMaxDamageTaken = function(pokemon) {
 
     setName = ennemyName + " (" + set + ")";
     var ennemyPkm = new PokemonCalc(setName);
-    
+
     var dmg = calculateAllMoves(ennemyPkm, closestPkm, f);
 
     for (var i = 0; i < dmg[0].length; i++) {
@@ -75,11 +75,15 @@ PokeyI.prototype.getMaxDamageTaken = function(pokemon) {
         break;
     }
     maxiDmg[i] = parseInt(100 * maxiDmg[i] / this.bot.ennemy.maxhp);
-		maxiDmg[i] = parseInt(maxiDmg[i] * 15/16 + maxiDmg[i] * 1/16 * ((closestPkm.ability == "Sniper") ? 2 : 1.5)); // E(X) with critical
+    maxiDmg[i] = parseInt(maxiDmg[i] * 15 / 16 + maxiDmg[i] * 1 / 16 * ((closestPkm.ability == "Sniper") ? 2 : 1.5)); // E(X) with critical
   }
 
   maxiDmg[4] = parseInt(maxiDmg[4] / this.bot.pokemon.maxhp * 100);
-	maxiDmg[4] = parseInt(maxiDmg[4] * 15/16 + maxiDmg[4] * 1/16 * ((this.hasAbility(this.bot.ennemy, "Sniper")) ? 2 : 1.5)); // E(X) with critical
+  maxiDmg[4] = parseInt(maxiDmg[4] * 15 / 16 + maxiDmg[4] * 1 / 16 * ((this.hasAbility(this.bot.ennemy, "Sniper")) ? 2 : 1.5)); // E(X) with critical
+
+  for (var i = 0; i < 5; i++) {
+    maxiDmg[i] = Math.min(100, maxiDmg[i]);
+  }
 
   return maxiDmg;
 

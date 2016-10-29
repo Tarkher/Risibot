@@ -1,19 +1,13 @@
 Risibot.prototype.choseMove = function() {
-	if (!this.pokemon || !this.ennemy)
-		return -1;
-	
-  movesInterests = [0, 0, 0, 0];
+    if (!this.pokemon || !this.ennemy)
+        return -1;
+    
+  movesInterests = this.AI.getMaxDamageTaken(this.pokemon, this.ennemy).slice(-1);
   for (var moveType in this.moves) {
     for (var j = 0; j < this.moves[moveType].length; j++) {
       move = this.moves[moveType][j][0];
       k = this.moves[moveType][j][1];
       switch (moveType) {
-        case 'physical':
-        case 'physicalS':
-        case 'special':
-        case 'specialS':
-          movesInterests[k - 1] = this.AI.evalDamagingMove(move);
-          break;
         case 'status':
           movesInterests[k - 1] = this.AI.evalStatus(move);
           break;
@@ -35,7 +29,7 @@ Risibot.prototype.choseMove = function() {
         case 'roar':
           movesInterests[k - 1] = this.AI.evalRoar(move);
           break;
-				case 'painSplit':
+        case 'painSplit':
           movesInterests[k - 1] = this.AI.evalPainSplit(move);
           break;
       }

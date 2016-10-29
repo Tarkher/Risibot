@@ -15,6 +15,7 @@ RisibotWatcher = function() { // Allows to manage Risibot from the tchat
 					}
 					break;
 				case "Risibot.stop()":
+					console.log(this.risibot)
 					this.risibot.stopSignal = true;
 					this.risibot = undefined;
 					break;
