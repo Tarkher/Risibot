@@ -260,7 +260,7 @@ PokeyI.prototype.evalRoar = function(move) {
 PokeyI.prototype.evalPainSplit = function(move) { // NOT TESTED NOW
 
   expectedDamage = this.getMaxDamageTaken(this.bot.pokemon, this.bot.ennemy)[1];
-  ennemyHP = parseInt((parseInt(2 * this.bot.ennemy.baseStats * this.bot.ennemy.level / 100) + 10 + this.bot.ennemy.level) * this.bot.ennemy.hp / 100);
+  ennemyHP = parseInt((parseInt(31 + 2 * this.bot.ennemy.baseStats * this.bot.ennemy.level / 100) + 10 + this.bot.ennemy.level) * this.bot.ennemy.hp / 100);
 
   if (this.isFaster(this.bot.pokemon, this.bot.ennemy)) { // If I should hit first
     newHP = parseInt((ennemyHP + this.bot.pokemon.hp) / 2); // Hp after pain split
