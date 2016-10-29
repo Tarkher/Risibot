@@ -69,6 +69,7 @@ PokeyI.prototype.getMaxDamageTaken = function(pokemon) {
 				maxiDmg[i] = 40;
 				break;
 			case "seismictoss":
+			case "nightshade":
 				maxiDmg[i] = pokemon.level;
 				break;
 			case "finalgambit":
