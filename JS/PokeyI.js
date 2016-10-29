@@ -323,10 +323,11 @@ PokeyI.prototype.canCure = function(pokemon) { // If pokemon can learn viable he
     switch (move) {
       case 'healbell':
       case 'aromatherapy':
+			case 'rest':
         return true;
     }
   }
-  return false;
+  return false || this.hasAbility(pokemon, "Natural Cure") || this.hasAbility(pokemon, "Shed Skin");
 };
 
 PokeyI.prototype.passiveHeal = function(pokemon) { // If pokemon can learn viable heal moves

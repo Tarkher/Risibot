@@ -1,36 +1,40 @@
 Risibot.prototype.choseMove = function() {
-    if (!this.pokemon || !this.ennemy)
-        return -1;
-  var movesInterests = this.AI.getMaxDamageTaken(this.pokemon, this.ennemy);
-  movesInterests = movesInterests.slice(0,4);
+	
+  if (!this.pokemon || !this.ennemy)
+    return -1;
+	
+  var dmgComputation = this.AI.getMaxDamageTaken(this.pokemon, this.ennemy);
+	var dmgTaken = movesInterests[4];
+  var movesInterests = dmgComputation.slice(0, 4);
+	
   for (var moveType in this.moves) {
     for (var j = 0; j < this.moves[moveType].length; j++) {
       move = this.moves[moveType][j][0];
       k = this.moves[moveType][j][1];
       switch (moveType) {
         case 'status':
-          movesInterests[k - 1] = this.AI.evalStatus(move);
+          movesInterests[k - 1] = this.AI.evalStatus(move, dmgTaken);
           break;
         case 'traps':
-          movesInterests[k - 1] = this.AI.evalTraps(move);
+          movesInterests[k - 1] = this.AI.evalTraps(move, dmgTaken);
           break;
         case 'heal':
-          movesInterests[k - 1] = this.AI.evalHeal(move);
+          movesInterests[k - 1] = this.AI.evalHeal(move, dmgTaken);
           break;
         case 'spin':
-          movesInterests[k - 1] = this.AI.evalSpin(move);
+          movesInterests[k - 1] = this.AI.evalSpin(move, dmgTaken);
           break;
         case 'seeds':
-          movesInterests[k - 1] = this.AI.evalSeeds(move);
+          movesInterests[k - 1] = this.AI.evalSeeds(move, dmgTaken);
           break;
         case 'defog':
-          movesInterests[k - 1] = this.AI.evalDefog(move);
+          movesInterests[k - 1] = this.AI.evalDefog(move, dmgTaken);
           break;
         case 'roar':
-          movesInterests[k - 1] = this.AI.evalRoar(move);
+          movesInterests[k - 1] = this.AI.evalRoar(move, dmgTaken);
           break;
         case 'painSplit':
-          movesInterests[k - 1] = this.AI.evalPainSplit(move);
+          movesInterests[k - 1] = this.AI.evalPainSplit(move, dmgTaken);
           break;
       }
       console.log("Risibot: choseMove: Move " + move.name + ".");
@@ -41,84 +45,54 @@ Risibot.prototype.choseMove = function() {
   return choice;
 };
 
-PokeyI.prototype.evalDamagingMove = function(move) {
+PokeyI.prototype.evalStatus = function(move, dmgTaken) { // Is this status move worth it ?
 
-  coef = this.getWeaknesses(this.bot.ennemy)[move.baseType]; // Type effectiveness
-  for (i = 0; i < this.bot.pokemon.types.length; i++) { // STAB
-    if (this.bot.pokemon && this.bot.pokemon.types[i] == move.baseType)
-      coef *= 1.5;
-  }
-
-  if (move.id == "lowkick") {
-    wgt = this.bot.ennemy.weightkg;
-    if (wgt < 10)
-      move.basePower = 20;
-    else if (wgt < 25)
-      move.basePower = 40;
-    else if (wgt < 50)
-      move.basePower = 60;
-    else if (wgt < 100)
-      move.basePower = 80;
-    else if (wgt < 200)
-      move.basePower = 100;
-    else
-      move.basePower = 120;
-  }
-
-  if (move.accuracy === true)
-    move.accuracy = 100;
-
-  volatileEffects = this.getMultiplicator(this.bot.pokemon, (move.category == "physical") ? 'atk' : 'spa');
-	
-	if (this.bot.pokemon.baseAbility == "Technician" && move.basePower <= 60)
-		move.basePower *= 1.5;
-
-  return coef * move.basePower * (move.accuracy / 100) * volatileEffects;
-
-};
-
-PokeyI.prototype.evalStatus = function(move) { // Is this status move worth it ?
-	
   if (this.bot.ennemy.status != "" ||
     (move.status == "par" && this.hasType(this.bot.ennemy, "Electric")) ||
     (move.status == "brn" && this.hasType(this.bot.ennemy, "Fire")) ||
     (move.baseType == "Grass" && this.hasType(this.bot.ennemy, "Grass")) ||
+		(move.baseType == "Electric" && this.hasType(this.bot.ennemy, "Ground")) ||
+		(move.baseType == "tox" && this.hasType(this.bot.ennemy, "Steel")) ||
     (move.status == "tox" && this.hasType(this.bot.ennemy, "Poison")) ||
+		(move.status == "par" && this.hasAbility(this.bot.ennemy, "Limber")) ||
+		(move.status == "brn" && this.hasAbility(this.bot.ennemy, "Water Veil")) ||
     (this.hasAbility(this.bot.ennemy, "Magic Bounce")) ||
-		(this.hasAbility(this.bot.ennemy, "Synchronize"))) {
+    (this.hasAbility(this.bot.ennemy, "Synchronize")) ||
+		(this.room.battle.yourSide.sideConditions.safeguard)) {
     return 0;
   }
 	
-	coef = (this.canCure(this.bot.ennemy)) ? 0.5 : 1; // Later, canCure will be a probability
+	var isAnnoying = this.getStatusInterest(move.status) / ( (this.canCure(this.bot.ennemy)) ? 2 : 1) ;				
+	return parseInt( ((isAnnoying + 1) * 30) ); // At most 90. Healing will be greater.
+};
 
-  switch (move.status) {
-    case "par":
-      coef *= (this.getStat(this.bot.ennemy, "spe") / 100);
-      break;
-    case "brn":
-      coef *= (this.getStat(this.bot.ennemy, "atk") / 100);
-      break;
-    case "slp":
-      coef *= (this.getDanger(this.bot.ennemy, this.bot.pokemon));
-      break;
-    case "tox":
-      coef *= (this.getBulk(this.bot.ennemy) / 100);
-  }
+PokeyI.prototype.getStatusInterest = function(s) {
+	switch (s) {
+		case 'par':
+			if (this.bot.ennemy.baseStats["spe"] > 120 || this.bot.ennemy.item == "Choice Scarf")
+				return 2;
+			if (this.bot.ennemy.baseStats["spe"] > 100)
+				return 1;
+			return 0;
+		case 'tox':
+			var wallCoef = this.getPotentialWall(this.bot.ennemy);
+			return ( (wallCoef >= 20) ? 2 : (wallCoef >= 15) ? 1 : 0 );
+		case 'brn':
+			if (this.bot.ennemy.baseStats["atk"] > 120 || this.bot.ennemy.item == "Choice Band")
+				return 2;
+			if (this.bot.ennemy.baseStats["atk"] > 100)
+				return 1;
+			return 0;
+		case 'slp':
+			return 1;
+	}
+	return 0;
+}
 
-  if (coef < 0.5)
-    return 30 * coef;
-  if (coef < 1)
-    return 60 * coef;
-  if (coef < 1.2)
-    return 150 * coef;
-  return 400 * coef;
+PokeyI.prototype.evalSpin = function(move, dmgTaken) { // Is this spin worth it ?
 
-};	
-
-PokeyI.prototype.evalSpin = function(move) { // Is this spin worth it ?
-
-  if ( (jQuery.isEmptyObject(this.bot.room.battle.mySide.sideConditions) && !this.bot.pokemon.volatiles.leechseed) || 
-			this.hasType(this.bot.ennemy, "Ghost") ) {
+  if ((jQuery.isEmptyObject(this.bot.room.battle.mySide.sideConditions) && !this.bot.pokemon.volatiles.leechseed) ||
+    this.hasType(this.bot.ennemy, "Ghost")) {
     return 0;
   }
   return 150;
@@ -167,7 +141,7 @@ PokeyI.prototype.evalSeeds = function(move) {
 
   if (this.bot.ennemy.volatiles.leechseed || this.hasType(this.bot.ennemy, "Grass") || this.hasAbility(this.bot.ennemy, "Magic Bounce"))
     return 0;
-  
+
   var d = this.getDanger(this.bot.ennemy, this.bot.pokemon);
   if (d < 0.3) // Ennemy could switch
     return 100;
@@ -179,79 +153,79 @@ PokeyI.prototype.evalSeeds = function(move) {
 };
 
 PokeyI.prototype.evalDefog = function(move) {
-	
-	if (!this.bot.room.battle.mySide.sideConditions)
-		return 0;
-	
-	var indic = 0;
-	for (var condition in this.bot.room.battle.mySide.sideConditions) {
-		var c = this.bot.room.battle.mySide.sideConditions[condition][0];
-		switch (c) {
-			case 'toxicspikes':
-			case 'spikes':
-				indic += 1;
-				break;
-			case 'stickyweb':
-			case 'stealthrock':
-				indic += 2;
-				break;
-			case 'reflect':
-			case 'safeguard':
-			case 'lightscreen':
-				indic -= 2;
-				break;
-		}
-	}
-	for (var condition in this.bot.room.battle.yourSide.sideConditions) {
-		var c = this.bot.room.battle.yourSide.sideConditions[condition][0];
-		switch (c) {
-			case 'toxicspikes':
-			case 'spikes':
-				indic -= 1;
-				break;
-			case 'stickyweb':
-			case 'stealthrock':
-				indic -= 2;
-				break;
-			case 'reflect':
-			case 'safeguard':
-			case 'lightscreen':
-				indic += 2;
-				break;
-		}
-	}
-	
-	if (indic < 0) // Terrain is good for the bot
-		return 0;
-	else
-		return 50 * indic;
+
+  if (!this.bot.room.battle.mySide.sideConditions)
+    return 0;
+
+  var indic = 0;
+  for (var condition in this.bot.room.battle.mySide.sideConditions) {
+    var c = this.bot.room.battle.mySide.sideConditions[condition][0];
+    switch (c) {
+      case 'toxicspikes':
+      case 'spikes':
+        indic += 1;
+        break;
+      case 'stickyweb':
+      case 'stealthrock':
+        indic += 2;
+        break;
+      case 'reflect':
+      case 'safeguard':
+      case 'lightscreen':
+        indic -= 2;
+        break;
+    }
+  }
+  for (var condition in this.bot.room.battle.yourSide.sideConditions) {
+    var c = this.bot.room.battle.yourSide.sideConditions[condition][0];
+    switch (c) {
+      case 'toxicspikes':
+      case 'spikes':
+        indic -= 1;
+        break;
+      case 'stickyweb':
+      case 'stealthrock':
+        indic -= 2;
+        break;
+      case 'reflect':
+      case 'safeguard':
+      case 'lightscreen':
+        indic += 2;
+        break;
+    }
+  }
+
+  if (indic < 0) // Terrain is good for the bot
+    return 0;
+  else
+    return 50 * indic;
 };
 
 PokeyI.prototype.evalRoar = function(move) {
-	
-	if (this.hasAbility(this.bot.ennemy, "Magic Bounce"))
-		return 0;
-	
-	coef = 1.0;
-	for (c in this.bot.room.battle.yourSide.sideConditions) {
-		switch (this.bot.room.battle.yourSide.sideConditions[c]) {
-			case 'stealthrock': // Will damage and destabilize
-			case 'spikes':
-			case 'toxicspikes':
-			case 'reflect': // Will temporize
-			case 'lightscreen':
-			case 'safeguard':
-				coef += 1.0;
-		}
-	}
-	for (b in this.bot.ennemy.boosts) {
-		coef += this.bot.ennemy.boosts[b];
-	}
-	
-	coef = Math.max(0.0, coef - this.getDanger(this.bot.ennemy, this.bot.pokemon));
-	
-	return 70 * coef;
-	
+
+  if (this.hasAbility(this.bot.ennemy, "Magic Bounce"))
+    return 0;
+
+  coef = 1.0;
+  for (c in this.bot.room.battle.yourSide.sideConditions) {
+    switch (this.bot.room.battle.yourSide.sideConditions[c]) {
+      case 'stealthrock': // Will damage and destabilize
+      case 'spikes':
+      case 'toxicspikes':
+      case 'reflect': // Will temporize
+      case 'lightscreen':
+      case 'safeguard':
+        coef += 1.0;
+    }
+  }
+  for (b in this.bot.ennemy.boosts) {
+    coef += this.bot.ennemy.boosts[b];
+  }
+
+  coef = Math.max(0.0, coef - this.getDanger(this.bot.ennemy, this.bot.pokemon));
+
+  return 70 * coef;
+
 };
 
 
